@@ -11,21 +11,56 @@ body {
     padding-right: 15px;
 }
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
-input,
-select,
-textarea {
-    max-width: 280px;
+/* Styles for the Default page (home)*/
+body{
+    background: linear-gradient(to right, rgb(252, 70, 107), rgb(63, 94, 251));
 }
 
 
+#inputContainer {
+    position: relative;
+    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    margin-top: 25%;
+}
+
+#userInput {
+    width: 80%;
+    height: 80px;
+    font-size: 36px;
+    padding-left: 5%;
+    display: inline;
+    border: none;
+    border-bottom-left-radius: 30px;
+    border-top-left-radius: 30px;
+}
+
+#userSubmit {
+    position: absolute;
+    z-index: 30;
+    width: 20%;
+    height: 100%;
+    border: none;
+    background-color: white;
+    border-bottom-right-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#userSubmit span {
+    font-size:36px;
+}
+
+#userSubmit span:hover {
+       color:gray;
+}
+
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
-    .jumbotron {
-        margin-top: 20px;
-    }
-
     .body-content {
         padding: 0;
     }
 }
+
+

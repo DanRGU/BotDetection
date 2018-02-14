@@ -2,5 +2,8 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
-<input type="text" id="userInput"/>
+    <div id="inputContainer">
+            <input type="text" id="userInput" placeholder="@username"/>
+            <button type ="submit" id="userSubmit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+    </div>
 </asp:Content>
