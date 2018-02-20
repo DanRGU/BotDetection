@@ -8,7 +8,7 @@ using System.Net;
 using System.IO;
 using System.Text;
 using Tweetinvi;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BotDetection
 {
@@ -33,17 +33,25 @@ namespace BotDetection
             // Set up your credentials (https://apps.twitter.com)
             Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
 
-            var tweets = Timeline.GetUserTimeline(userInput.Text,1);
-            var json = Tweetinvi.JsonSerializer.ToJson(tweets);
-
+            var tweets = Timeline.GetUserTimeline(userInput.Text,6);
+            var jsonString = Tweetinvi.JsonSerializer.ToJson(tweets);
+            //Using Json.NET to change json string to an array
+            JArray parsedJson = JArray.Parse(jsonString);
+            string tweettext = "";
 
             if (tweets != null)
             {
-                foreach (var tweet in tweets)
+                for (int x = 0; x < parsedJson.Count(); x++)
                 {
-                    twitterOutput.Text = json.ToString();
-                    break;
+                    JObject tweet = JObject.Parse(parsedJson[x].ToString());
+
+                    
+                    tweettext += tweet["text"].ToString() + "\n on " + tweet["created_at"].ToString() + "\n\n";
+                    
+                    
                 }
+
+                twitterOutput.Text = tweettext;
             }
             else {
                 twitterOutput.Text = "Private Account";
@@ -51,19 +59,21 @@ namespace BotDetection
         }
     }
 
+    //https://stackoverflow.com/questions/12511171/deserialize-twitter-json-with-json-net-in-c-sharp-to-fetch-hashtags
+
     public class TwitterUser
     {
 
         public string ScreenName { get; set; }
-        public Tweets tweets{ get; set; }
-        public string postTime { get; set; }
-        public Array hashtags { get; set; }
+        public Tweets Tweets{ get; set; }
+        public string PostTime { get; set; }
+        public Array Hashtags { get; set; }
 
     }
 
     public class Tweets {
 
-        public string content { get; set; }
+        public string Content { get; set; }
         
 
     }
