@@ -12,8 +12,8 @@ body {
 }
 
 /* Styles for the Default page (home)*/
-body{
-    background: linear-gradient(to right, rgb(252, 70, 107), rgb(63, 94, 251));
+body {
+    background: linear-gradient(to right, rgb(66, 188, 244), rgb(65, 146, 244));
 }
 
 
@@ -26,18 +26,24 @@ body{
     margin-top: 25%;
 }
 
-#userInput {
+#MainContent_userInput {
     width: 80%;
-    height: 80px;
-    font-size: 36px;
+    height: 40px;
+    font-size: 30px;
     padding-left: 5%;
-    display: inline;
     border: none;
     border-bottom-left-radius: 30px;
     border-top-left-radius: 30px;
 }
 
-#userSubmit {
+#MainContent_twitterOutput 
+{
+    width:90%;
+    height:400px;
+    margin:20px;
+}
+
+#MainContent_userSubmit {
     position: absolute;
     z-index: 30;
     width: 20%;
@@ -48,13 +54,14 @@ body{
     border-top-right-radius: 30px;
 }
 
-#userSubmit span {
-    font-size:36px;
+#MainContent_userSubmit span {
+    font-size:30px;
+    color:black;
 }
 
-#userSubmit span:hover {
-       color:gray;
-}
+#MainContent_userSubmit span:hover {
+        color: gray;
+    }
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
