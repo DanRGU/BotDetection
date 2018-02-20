@@ -26,6 +26,7 @@ namespace BotDetection
         }
 
         //Using TweetInvi to gather the Twitter timeline of the supplied account
+        //https://github.com/linvi/tweetinvi/wiki/Introduction
 
         protected void submitButton_Clicked(object sender, EventArgs e)
         {

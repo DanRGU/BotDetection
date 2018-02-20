@@ -6,6 +6,6 @@
             <asp:LinkButton ID="userSubmit" runat="server" OnClick="submitButton_Clicked"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></asp:LinkButton>
         </div>
 
-        <asp:TextBox runat="server" ID="twitterOutput" Text="" />
+        <asp:TextBox runat="server" ID="twitterOutput" TextMode="MultiLine" />
 
 </asp:Content>
