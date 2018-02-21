@@ -7,7 +7,7 @@
             <ContentTemplate>
                 <asp:TextBox runat="server" ID="userInput" />
                 <asp:LinkButton ID="userSubmit" runat="server" OnClick="submitButton_Clicked"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></asp:LinkButton>
-                <asp:TextBox runat="server" ID="twitterOutput" TextMode="MultiLine" />
+                <asp:TextBox runat="server" ID="twitterOutput" TextMode="MultiLine" ReadOnly="true" />
             </ContentTemplate>
         </asp:UpdatePanel>
     </div>
