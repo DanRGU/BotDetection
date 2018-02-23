@@ -96,7 +96,7 @@ namespace BotDetection
             {
                 SingleTweet tweet = (SingleTweet)user.UserTweets[i];//Setting current tweet
                 SingleTweet tweet2 = new SingleTweet();//Initialising previous tweet (next in array)
-                TimeSpan span = new TimeSpan(); //Initialising TimeSpan
+                TimeSpan span = new TimeSpan(); //Initialising TimeSpan 
 
                 if (i + 1 < user.UserTweets.Count)
                 {
