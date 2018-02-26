@@ -19,30 +19,21 @@ namespace BotDetection
         string oAuthConsumerSecret = "I8tLmmWblYLzRuHUSTtxaXmfHVLiKm0wGA0G8elR0SK34qor3D";
         string oAuthAccessToken = "469737894-eMYLQcqUEyglEaURFMGgfW2IKYEVVSXZxcAwGZEh";
         string oAuthAccessSecret = "C51EiVsmfGT08Auxl5wwYUkByDTsdy9sQxvXj2Mw5VJ1p";
-
+        public string charsInTweets = "[";
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
+        // Set up credentials (https://apps.twitter.com)
+        Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
         }
 
         //Using TweetInvi to gather the Twitter timeline of the supplied account
         //https://github.com/linvi/tweetinvi/wiki/Introduction
 
-        /*
-         Questions
-
-        JSON to c# objects or keep as json (current method)
-        Store stuff in DB before (long JSON string)?  or filter down and store like that
-
-
-         */
-
         protected void submitButton_Clicked(object sender, EventArgs e)
         {
             twitterOutput.Text = "";
-            // Set up your credentials (https://apps.twitter.com)
-            Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
+            
 
             TwitterUser user = new TwitterUser();
 
@@ -50,14 +41,15 @@ namespace BotDetection
             var jsonString = Tweetinvi.JsonSerializer.ToJson(tweets);
             //Using Json.NET to change json string to an array
             JArray parsedJson = JArray.Parse(jsonString);
-
+            
 
             if (tweets != null)
             {
                 //Loop for each tweet
                 for (int x = 0; x < parsedJson.Count(); x++)
                 {
-                    SingleTweet tweet1 = new SingleTweet();
+
+                    SingleTweet currentTweet = new SingleTweet();
 
                     JObject tweet = JObject.Parse(parsedJson[x].ToString());
 
@@ -66,31 +58,53 @@ namespace BotDetection
 
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
 
-                    tweet1.Content = tweet["text"].ToString();
-                    tweet1.retweets = (int)tweet["retweet_count"];
-                    tweet1.likes = (int)tweet["favorite_count"];
+                    
 
+                    currentTweet.Content = tweet["text"].ToString();
+                    currentTweet.retweets = (int)tweet["retweet_count"];
+                    currentTweet.likes = (int)tweet["favorite_count"];
+                    
                     for (int i = 0; i < hashtags.Count(); i++)
                     {
                         JObject hashtagContent = JObject.Parse(hashtags[i].ToString());
-                        tweet1.Hashtags.Add(hashtagContent["text"].ToString());
+                        currentTweet.Hashtags.Add(hashtagContent["text"].ToString());
                     }
 
 
-                    tweet1.PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    currentTweet.PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                     //Setting the user stuff
                     user.ScreenName = tweetuser["name"].ToString();
-                    user.UserTweets.Add(tweet1);
+                    user.UserTweets.Add(currentTweet);
+                    charsInTweets += currentTweet.Content.Length + ",";
+
                 }
-
+                charsInTweets += "]";
             }
-
             else
             {
                 twitterOutput.Text = "Private Account";
             }
 
-            twitterOutput.Text = "Tweets by : " + user.ScreenName + "\n";
+            twitterOutput.Text = user.outputTweets(user);
+            
+        }
+    }
+
+    //https://stackoverflow.com/questions/12511171/deserialize-twitter-json-with-json-net-in-c-sharp-to-fetch-hashtags
+
+
+    public class TwitterUser
+    {
+        public string ScreenName { get; set; }
+        public ArrayList UserTweets { get; set; }
+        public TwitterUser()
+        {
+            UserTweets = new ArrayList();
+        }
+
+        public string outputTweets(TwitterUser user) {
+
+            string output = "Tweets by : " + user.ScreenName + "\n";
 
             for (int i = 0; i < user.UserTweets.Count; i++)
             {
@@ -105,34 +119,16 @@ namespace BotDetection
                 }
 
                 //Outputting tweet Information
-                twitterOutput.Text += tweet.Content + "\n";
-                twitterOutput.Text += "Containing " + tweet.Hashtags.Count + " hashtags\n";
-                twitterOutput.Text += tweet.Content.Length + " characters long\n";
-                twitterOutput.Text += "Time of post " + tweet.PostTime + "\n";
-                twitterOutput.Text += "Time since previous post " + span.Days + " days, " + span.Hours + " hours, " + span.Minutes + " minutes, " + span.Seconds + " seconds" + "\n";
-                twitterOutput.Text += "Number of retweets " + tweet.retweets + "\n";
-                twitterOutput.Text += "Number of likes " + tweet.likes + "\n";
-                twitterOutput.Text += "\n\n";
+                output += tweet.Content + "\n"+ "Containing " + tweet.Hashtags.Count + " hashtags\n" 
+                + tweet.Content.Length + " characters long\n"
+                + "Time of post " + tweet.PostTime + "\n"
+                + "Time since previous post " + span.Days + " days, " + span.Hours + " hours, " + span.Minutes + " minutes, " + span.Seconds + " seconds" + "\n"
+                + "Number of retweets " + tweet.retweets + "\n"
+                + "Number of likes " + tweet.likes + "\n"
+                + "\n\n";
 
             }
-        }
-    }
-
-    //https://stackoverflow.com/questions/12511171/deserialize-twitter-json-with-json-net-in-c-sharp-to-fetch-hashtags
-
-    /*
-     TASK LIST
-     *Create classes for a user
-     *Create class for a tweet
-     */
-
-    public class TwitterUser
-    {
-        public string ScreenName { get; set; }
-        public ArrayList UserTweets { get; set; }
-        public TwitterUser()
-        {
-            UserTweets = new ArrayList();
+            return output;
         }
     }
 
