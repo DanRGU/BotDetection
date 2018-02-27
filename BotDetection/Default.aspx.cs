@@ -90,6 +90,10 @@ namespace BotDetection
         }
     }
 
+    // Use web sockets to update js
+    //tweet sentiment analysis affin
+
+
     //https://stackoverflow.com/questions/12511171/deserialize-twitter-json-with-json-net-in-c-sharp-to-fetch-hashtags
 
 

@@ -6,7 +6,7 @@
 
         function myFunction() {
 
-            var data = [110, 28, 36, 40, 127];
+            var data = <%=charsInTweets%>;
 
            d3.select(".chart")
                 .selectAll("div")
