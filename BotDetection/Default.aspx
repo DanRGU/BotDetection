@@ -1,23 +1,14 @@
-﻿<%@ Page Title="Home Page" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="BotDetection._Default" %>
+﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="BotDetection._Default" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
-    <script type="text/javascript" language="javascript">
+    <script type="text/javascript">
+        $(function () {  // Declare a proxy to reference the hub. 
+            var update = $.connection.updateHub;
 
-        function myFunction() {
-
-            var data = <%=charsInTweets%>;
-
-           d3.select(".chart")
-                .selectAll("div")
-                .data(data)
-                .enter()
-                .append("div")
-                .style("width", function (d) { return d * 2 + "px"; })
-                .text(function (d) { return d + " letters" });
-            
-        }
-
+            // Start the connection.
+            $.connection.hub.start().done(function () { Console.Log("Working"); });
+        });
     </script>
 
     <div id="inputContainer">
@@ -32,6 +23,7 @@
                 </ContentTemplate>
             </asp:UpdatePanel>
         </asp:Panel>
+
         <div class="chart">
         </div>
 

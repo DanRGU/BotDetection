@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Net;
-using System.IO;
-using System.Text;
 using Tweetinvi;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using Aylien.TextApi;
 
 namespace BotDetection
 {
@@ -20,6 +15,8 @@ namespace BotDetection
         string oAuthAccessToken = "469737894-eMYLQcqUEyglEaURFMGgfW2IKYEVVSXZxcAwGZEh";
         string oAuthAccessSecret = "C51EiVsmfGT08Auxl5wwYUkByDTsdy9sQxvXj2Mw5VJ1p";
         public string charsInTweets = "[";
+
+        Client client = new Client("48a217c2", "000e2e66dcac9d404baf101d3d6dcac9");
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -57,12 +54,11 @@ namespace BotDetection
                     JObject entity = JObject.Parse(parsedJson[x]["entities"].ToString());
 
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
-
                     
-
                     currentTweet.Content = tweet["text"].ToString();
                     currentTweet.retweets = (int)tweet["retweet_count"];
                     currentTweet.likes = (int)tweet["favorite_count"];
+                    currentTweet.sentiment = client.Sentiment(  text:tweet["text"].ToString());
                     
                     for (int i = 0; i < hashtags.Count(); i++)
                     {
@@ -123,12 +119,15 @@ namespace BotDetection
                 }
 
                 //Outputting tweet Information
-                output += tweet.Content + "\n"+ "Containing " + tweet.Hashtags.Count + " hashtags\n" 
+                output += tweet.Content + "\n" + "Containing " + tweet.Hashtags.Count + " hashtags\n"
                 + tweet.Content.Length + " characters long\n"
                 + "Time of post " + tweet.PostTime + "\n"
                 + "Time since previous post " + span.Days + " days, " + span.Hours + " hours, " + span.Minutes + " minutes, " + span.Seconds + " seconds" + "\n"
                 + "Number of retweets " + tweet.retweets + "\n"
                 + "Number of likes " + tweet.likes + "\n"
+                + " Sentiment Analysis :\n" 
+                + "     Subjectivity : " + tweet.sentiment.Subjectivity + " with a confidence of " + tweet.sentiment.SubjectivityConfidence
+                + "\n     Polarity : " + tweet.sentiment.Polarity + " with a confidence of " + tweet.sentiment.PolarityConfidence
                 + "\n\n";
 
             }
@@ -144,6 +143,7 @@ namespace BotDetection
         public int retweets { get; set; }
         public int likes { get; set; }
         public ArrayList Hashtags { get; set; }
+         public Sentiment sentiment { get; set; }
 
         public SingleTweet()
         {
