@@ -34,8 +34,7 @@ namespace BotDetection
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                             "~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/signalr").Include(
-                  "~/Scripts/jquery.signalR-{version}.js"));
+
 
             ScriptManager.ScriptResourceMapping.AddDefinition(
                 "respond",

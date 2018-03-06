@@ -93,6 +93,7 @@ namespace BotDetection
 
                     }
                     tweetLengths += "]";
+                    userInput.Text = "";
 
                 }
             }
@@ -104,7 +105,6 @@ namespace BotDetection
 
 
             twitterOutput.Text = user.outputTweets(user);
-
         }
     }
 
