@@ -3,6 +3,22 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
     <script type="text/javascript">
+        function getData() {
+
+            $.ajax({
+                type: "POST",
+                url: "Default.aspx/submitButton_Clicked",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#twitterOutput").text(response.d);
+                },
+                failure: function () {
+                    alert("Error");
+                }
+            });
+
+        }
 
     </script>
 
@@ -13,7 +29,7 @@
                 <ContentTemplate>
                     <div id="submission">
                         <asp:TextBox runat="server" ID="userInput" defaultbutton="userSubmit" />
-                        <asp:LinkButton runat="server" ID="userSubmit" OnClick="submitButton_Clicked"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></asp:LinkButton>
+                        <asp:LinkButton runat="server" ID="userSubmit" OnClientClick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></asp:LinkButton>
                     </div>
                     <div id="errorContainer">
                         <asp:RequiredFieldValidator
