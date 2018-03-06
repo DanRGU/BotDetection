@@ -3,11 +3,14 @@ using Microsoft.AspNet.SignalR.Hubs;
 
 namespace BotDetection
 {
-   // [HubName("updateHub")]
+    // [HubName("updateHub")]
     public class UpdateHub : Hub
     {
-        public void Send(string name, string message)
+
+        public void UpdateClient(string tweetLengths)
         {
+            Clients.All.updateClient(tweetLengths);
         }
+
     }
 }
