@@ -3,47 +3,43 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
     <script type="text/javascript">
+
         function getData() {
 
+            var dataParam = $("#userInput").val();
+
+
+            //$.post("GetTweets.asmx/GetTwitterDataJSON", { userID: data }, "application/json; charset=utf-8")
+            //    .done(function (response) {
+            //        $("#twitterOutput").val(response);
+            //    });
+
             $.ajax({
+                url: "GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
-                url: "Default.aspx/submitButton_Clicked",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
+                data: "{ 'userID': '"+dataParam+"' }",
                 success: function (response) {
-                    $("#twitterOutput").text(response.d);
-                },
-                failure: function () {
-                    alert("Error");
+                    $("#twitterOutput").val(JSON.stringify(response));
                 }
             });
-
         }
 
     </script>
 
     <div id="inputContainer">
 
-        <asp:Panel ID="Panel1" runat="server" DefaultButton="userSubmit">
-            <asp:UpdatePanel runat="server">
-                <ContentTemplate>
-                    <div id="submission">
-                        <asp:TextBox runat="server" ID="userInput" defaultbutton="userSubmit" />
-                        <asp:LinkButton runat="server" ID="userSubmit" OnClientClick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></asp:LinkButton>
-                    </div>
-                    <div id="errorContainer">
-                        <asp:RequiredFieldValidator
-                            ID="userValidate"
-                            ErrorMessage="Please enter a username"
-                            ControlToValidate="userInput"
-                            runat="server">
-                        </asp:RequiredFieldValidator>
-                    </div>
+        <asp:UpdatePanel runat="server">
+            <ContentTemplate>
+                <div id="submission">
+                    <input id="userInput" />
+                    <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                </div>
 
-                    <asp:TextBox runat="server" ID="twitterOutput" TextMode="MultiLine" ReadOnly="true" />
-                </ContentTemplate>
-            </asp:UpdatePanel>
-        </asp:Panel>
+                <textarea id="twitterOutput"></textarea>
+            </ContentTemplate>
+        </asp:UpdatePanel>
 
         <div class="chart">
         </div>
