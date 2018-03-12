@@ -15,13 +15,17 @@ namespace BotDetection
         public int likes { get; set; }
         public ArrayList Hashtags { get; set; }
         public Sentiment sentiment { get; set; }
+        public int tweetID { get; set; }
 
         public SingleTweet()
         {
+            Content = "";
             Hashtags = new ArrayList();
             PostTime = new DateTime();
+            sentiment = null;
             retweets = 0;
             likes = 0;
+            tweetID = 0;
         }
     }
 }

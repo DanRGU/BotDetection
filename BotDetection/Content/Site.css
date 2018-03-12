@@ -74,12 +74,12 @@
     padding:3px;
 }
 
-.chart div {
-    font: 10px sans-serif;
-    background-color: steelblue;
-    text-align: right;
-    padding: 10px;
-    margin-top: 3px;
-    color: white;
-}
+    .chart div {
+        font: 10px sans-serif;
+        background-color: steelblue;
+        text-align: right;
+        padding: 5px;
+        margin: 1px;
+        color: white;
+    }
 

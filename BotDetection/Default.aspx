@@ -3,25 +3,39 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
     <script type="text/javascript">
+        var data = [];
 
         function getData() {
 
             var dataParam = $("#userInput").val();
-
-
-            //$.post("GetTweets.asmx/GetTwitterDataJSON", { userID: data }, "application/json; charset=utf-8")
-            //    .done(function (response) {
-            //        $("#twitterOutput").val(response);
-            //    });
 
             $.ajax({
                 url: "GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: "{ 'userID': '"+dataParam+"' }",
-                success: function (response) {
-                    $("#twitterOutput").val(JSON.stringify(response));
+                data: "{ 'userID': '" + dataParam + "' }",
+                success:
+                function (response) {
+                    var tweets = response.d;
+                    var data = [];
+                    for (var i in tweets) {
+
+                        var tweet = tweets[i];
+                        $("#twitterOutput").append(tweet["Content"] + "\n Length: " + tweet["Content"].length + "\n\n");
+                        data.push(tweet["Content"].length);
+
+                    }
+                    
+                    
+                    d3.select(".chart")
+                        .selectAll("div")
+                        .data(data)
+                        .enter()
+                        .append("div")
+                        .style("width", function (d) { return d * 2 + "px"; })
+                        .text(function (d) { return d; });
+
                 }
             });
         }
