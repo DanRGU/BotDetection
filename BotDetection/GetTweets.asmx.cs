@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Script.Services;
 using System.Web.Services;
 using Tweetinvi;
-using Tweetinvi.Parameters;
 
 namespace BotDetection
 {
@@ -33,12 +32,8 @@ namespace BotDetection
         public Object GetTwitterDataJSON(string userID)
         {
             Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
-            //Set the output box to empty
-
-            var userTimelineParameters = new UserTimelineParameters();
-            userTimelineParameters.AddCustomQueryParameter("tweetmode", "extended");
-            userTimelineParameters.MaximumNumberOfTweetsToRetrieve = 10;
-            var tweets = Timeline.GetUserTimeline(userID, userTimelineParameters);
+            
+            var tweets = Timeline.GetUserTimeline(userID, 10);
             var jsonString = tweets.ToJson();
 
             //Using Json.NET to change json string to an array
@@ -64,20 +59,13 @@ namespace BotDetection
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
 
                     tweetArr[i] = new SingleTweet();
+
                     tweetArr[i].tweetID = i;
-                    //Setting the tweet variables
-                    if (tweet["extended_tweet"].ToString() != null && tweet["extended_tweet"].ToString() != "")
-                    {
-                        tweetArr[i].Content = tweet["extended_tweet"].ToString();
-                    }
-                    else
-                    {
-                        tweetArr[i].Content = tweet["text"].ToString();
-                    }
+                    tweetArr[i].Content = tweet["text"].ToString();
                     tweetArr[i].retweets = (int)tweet["retweet_count"];
                     tweetArr[i].likes = (int)tweet["favorite_count"];
                     //Setting sentiment for tweet content
-                    tweetArr[i].sentiment = client.Sentiment(text: tweet["text"].ToString());
+                    tweetArr[i].sentiment = client.Sentiment(text: tweetArr[i].Content);
 
                     //Loop through for all the hashtags and add them to the hashtag array
                     for (int j = 0; j < hashtags.Count(); j++)

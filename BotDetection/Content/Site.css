@@ -1,6 +1,6 @@
 ﻿body {
     padding-bottom: 20px;
-    background: linear-gradient(to right, #000000, #434343);
+    background: linear-gradient(to right, #00c6ff, #0072ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 /* Wrapping element */
