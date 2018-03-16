@@ -33,7 +33,7 @@
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
                     //test
-                    //Initialising the variables for the tweets
+                    //Initialising the variables for the tweetsd
                     var content = [];
                     var retweets = [];
                     var likes = [];
