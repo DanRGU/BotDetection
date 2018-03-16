@@ -9,13 +9,14 @@
             var output = date.getHours() + " hour(s), " + date.getMinutes() + " minute(s), " + date.getSeconds() + "second(s)";
             return output;
         }
+        
 
         //https://www.trulia.com/vis/tru247/ Mapping times for posting
         //https://bl.ocks.org/mbostock/c69f5960c6b1a95b6f78
         //http://bl.ocks.org/bunkat/2595950
 
         function getData() {
-
+            
             var dataParam = $("#userInput").val();
 
             $.ajax({
@@ -27,6 +28,7 @@
                 success:
 
                 function (response) {
+                    console.log("start");
 
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
@@ -42,7 +44,7 @@
                     var polarity = [];
                     var subjectivityConfidence = [];
                     var polarityConfidence = [];
-
+                    var scatterData = [];
                     ///stuf.push({ content: content , })
 
                     //Looping for each tweet and adding the variables to the arrays
@@ -64,8 +66,29 @@
                         subjectivityConfidence.push(tweetSentiment["SubjectivityConfidence"]);
                         polarityConfidence.push(tweetSentiment["PolarityConfidence"]);
 
-                    }
+                        //making the content for the scatter graph (To put into the 2D array)
+                        var innerScatter = [];
 
+                        if (tweetSentiment["Subjectivity"] == "subjective") {
+                            innerScatter.push(tweetSentiment["SubjectivityConfidence"]);
+                        }
+                        else {
+                            innerScatter.push(tweetSentiment["SubjectivityConfidence"] * -1);
+                        }
+
+                        if (tweetSentiment["Polarity"] == "positive") {
+                            innerScatter.push(tweetSentiment["PolarityConfidence"]);
+                        }
+                        else {
+                            innerScatter.push(tweetSentiment["PolarityConfidence"] * -1);
+                        }
+
+                        scatterData.push(innerScatter);
+
+
+
+                    }
+                    //Printing to output
                     for (var i = 0; i < tweets.length; i++) {
                         if (i < tweets.length - 1) {
                             timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
@@ -87,75 +110,98 @@
                             + "\n\n");
 
                     }
-
-                    d3.select(".chart")
-                        .selectAll("div")
-                        .data(tweetLengths)
-                        .enter()
-                        .append("div")
-                        .style("width", function (d) { return d * 2 + "px"; })
-                        .text(function (d) { return d; });
-
-
-
-                    var data = [[5, 3], [10, 17], [15, 4], [2, 8]];
-
-                    var margin = { top: 20, right: 15, bottom: 60, left: 60 }
-                        , width = 960 - margin.left - margin.right
-                        , height = 500 - margin.top - margin.bottom;
-
-                    var x = d3.scale.linear()
-                        .domain([0, d3.max(data, function (d) { return d[0]; })])
-                        .range([0, width]);
-
-                    var y = d3.scale.linear()
-                        .domain([0, d3.max(data, function (d) { return d[1]; })])
-                        .range([height, 0]);
-
-                    var chart = d3.select('body')
-                        .append('svg:svg')
-                        .attr('width', width + margin.right + margin.left)
-                        .attr('height', height + margin.top + margin.bottom)
-                        .attr('class', 'chart')
-
-                    var main = chart.append('g')
-                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-                        .attr('width', width)
-                        .attr('height', height)
-                        .attr('class', 'main')
-
-                    // draw the x axis
-                    var xAxis = d3.svg.axis()
-                        .scale(x)
-                        .orient('bottom');
-
-                    main.append('g')
-                        .attr('transform', 'translate(0,' + height + ')')
-                        .attr('class', 'main axis date')
-                        .call(xAxis);
-
-                    // draw the y axis
-                    var yAxis = d3.svg.axis()
-                        .scale(y)
-                        .orient('left');
-
-                    main.append('g')
-                        .attr('transform', 'translate(0,0)')
-                        .attr('class', 'main axis date')
-                        .call(yAxis);
-
-                    var g = main.append("svg:g");
-
-                    g.selectAll("scatter-dots")
-                        .data(data)
-                        .enter().append("svg:circle")
-                        .attr("cx", function (d, i) { return x(d[0]); })
-                        .attr("cy", function (d) { return y(d[1]); })
-                        .attr("r", 8);
-
+                    //Drawing the bar chart
+                    
+                    drawBarChart(tweetLengths);
+                    drawScatterChart(scatterData);
                 }
+               
+                
             });
         }
+
+        function drawBarChart(data) {
+            d3.select(".barChart")
+                .selectAll("div")
+                .data(data)
+                .enter()
+                .append("div")
+                .style("width", function (d) { return d * 2 + "px"; })
+                .text(function (d) { return d; });
+        }
+        function drawScatterChart(data){
+
+            //drawing the scatter graph (issues with the Y axis numbering)
+            //setting margins
+            var margin = { top: 20, right: 15, bottom: 60, left: 60 }
+                , width = 500 - margin.top - margin.bottom
+                , height = 500 - margin.top - margin.bottom;
+
+            //
+            var x = d3.scale.linear()
+                .domain([-1, 1])
+                .range([0, width]);
+
+            var y = d3.scale.linear()
+                .domain([-1, 1])
+                .range([height, 0]);
+
+            var chart = d3.select('.scatterChart')
+                .append('svg:svg')
+                .attr('width', width + margin.right + margin.left)
+                .attr('height', height + margin.top + margin.bottom)
+                .attr('class', 'chart')
+
+            var main = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')
+
+            // draw the x axis
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient('bottom');
+
+            main.append('g')
+                .attr('transform', 'translate(0,' + height + ')')
+                .attr('class', 'main axis date')
+                .call(xAxis);
+
+            // draw the y axis
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient('left');
+
+            main.append('g')
+                .attr('transform', 'translate(0,0)')
+                .attr('class', 'main axis date')
+                .call(yAxis);
+
+            var g = main.append("svg:g");
+
+            g.selectAll("scatter-dots")
+                .data(data)
+                .enter().append("svg:circle")
+                .attr("cx", function (d, i) { return x(d[0]); })
+                .attr("cy", function (d) { return y(d[1]); })
+                .attr("r",2);
+
+            chart.selectAll(".tick")
+                .each(function (d, i) {
+                    if (d != 1) {
+                        this.remove();
+                    }
+
+                });
+            chart.selectAll("text")
+                .each(function (d, i) {
+                    if (d != 1 && d != -1) {
+                        this.remove();
+                    }
+
+                });
+                }
 
     </script>
 
@@ -172,11 +218,9 @@
             </ContentTemplate>
         </asp:UpdatePanel>
 
-        <div class="chart">
-            <h4>Tweet Lengths</h4>
+        <div class="barChart">
         </div>
-        <div class="scatterChart">
-        </div>
+        <div class="scatterChart"></div>
 
     </div>
 </asp:Content>

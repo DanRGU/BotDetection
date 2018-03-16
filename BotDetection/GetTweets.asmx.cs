@@ -33,7 +33,7 @@ namespace BotDetection
         {
             Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
             
-            var tweets = Timeline.GetUserTimeline(userID, 10);
+            var tweets = Timeline.GetUserTimeline(userID, 60);
             var jsonString = tweets.ToJson();
 
             //Using Json.NET to change json string to an array

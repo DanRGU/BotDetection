@@ -69,12 +69,12 @@
     }
 }
 
-.chart{
+.barChart{
     background-color:white;
     padding:3px;
 }
 
-    .chart div {
+    .barChart div {
         font: 10px sans-serif;
         background-color: steelblue;
         text-align: right;
@@ -82,4 +82,19 @@
         margin: 1px;
         color: white;
     }
+.chart {
+}
 
+.main text {
+    font: 10px sans-serif;
+}
+
+.axis line, .axis path {
+    shape-rendering: crispEdges;
+    stroke: black;
+    fill: none;
+}
+
+circle {
+    fill: black;
+}
