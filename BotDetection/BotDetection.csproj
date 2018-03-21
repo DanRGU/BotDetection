@@ -263,7 +263,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="App_Data\SingleTweet.cs" />
-    <Compile Include="Sentiment.cs" />
+    <Compile Include="App_Data\Sentiment.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

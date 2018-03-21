@@ -1,6 +1,7 @@
 ﻿body {
     padding-bottom: 20px;
-    background: linear-gradient(to right, #00c6ff, #0072ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-color: aliceblue;
+
 }
 
 /* Wrapping element */
@@ -82,8 +83,6 @@
         margin: 1px;
         color: white;
     }
-.chart {
-}
 
 .main text {
     font: 10px sans-serif;
@@ -97,4 +96,24 @@
 
 circle {
     fill: black;
+}
+
+
+.bar--positive {
+    fill: steelblue;
+}
+
+.bar--negative {
+    fill: darkorange;
+}
+
+.axis text {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
 }

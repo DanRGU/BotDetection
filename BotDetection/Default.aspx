@@ -9,13 +9,64 @@
             var output = date.getHours() + " hour(s), " + date.getMinutes() + " minute(s), " + date.getSeconds() + "second(s)";
             return output;
         }
+        //return the day of the week +1 (1-7)
+        function checkDay(date) {
+            return date.getDay() + 1;
+        }
+        //return the hour of the day +1 (to make it between 1-24)
+        function checkHour() {
+            return date.getHours() + 1;
+        }
+        //Create 2D array
+        function createArray(length) {
+            var arr = new Array(length || 0),
+                i = length;
 
+            if (arguments.length > 1) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                while (i--) arr[length - 1 - i] = createArray.apply(this, args);
+            }
 
-        //https://www.trulia.com/vis/tru247/ Mapping times for posting
-        //https://bl.ocks.org/mbostock/c69f5960c6b1a95b6f78
-        //http://bl.ocks.org/bunkat/2595950
+            return arr;
+        }
+        //gather the data for the heatmap
+        function getHeatData(input) {
+            var days = createArray(7, 24);
+
+            for (var i = 0; i < 7; i++) {
+                for (var j = 0; j < 24; j++) {
+                    days[i][j] = 0;
+                }
+            }
+            //Loop for every date object and update the days value
+            for (var i = 0; i < input.length; i++) {
+
+                currentDate = new Date(input[i]);
+                days[currentDate.getDay()][currentDate.getHours()]++;
+
+            }
+            var output = [];
+            for (var d = 0; d < 7; d++) {
+                for (var h = 0; h < 24; h++) {
+
+                    if (days[d][h] == null) {
+
+                        days[d][h] == 0;
+                    }
+
+                    output.push({ day: d + 1, hour: h + 1, value: days[d][h] }, )
+                }
+            }
+            return output;
+        }
 
         function getData() {
+            if ($("#userInput").val() == ""){
+                alert("Please enter a username");
+                return;
+            }
+
+            
 
             var dataParam = $("#userInput").val();
 
@@ -28,10 +79,21 @@
                 success:
 
                 function (response) {
-                    console.log("working2");
+
+                    d3.select(".sentimentChart").selectAll("svg")
+                        .each(function (d, i) {
+                            this.remove();
+
+                        });
+                    d3.select(".heatMap").selectAll("svg")
+                        .each(function (d, i) {
+                            this.remove();
+
+                        });
+
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
-                    
+
                     //test
                     //Initialising the variables for the tweets
                     var content = [];
@@ -41,184 +103,11 @@
                     var tweetLengths = [];
                     var timeSince = [];
                     var sentimentScore = [];
-                    var scatterData = [];
-                    var heatData = [
-                        { day: 1, hour: 1, value: 220},
-                        { day: 1, hour: 2, value: 0},
-                        { day: 1, hour: 3, value: 2},
-                        { day: 1, hour: 4, value: 10 },
-                        { day: 1, hour: 5, value: 22 },
-                        { day: 1, hour: 6, value: 13 },
-                        { day: 1, hour: 7, value: 65 },
-                        { day: 1, hour: 8, value: 100 },
-                        { day: 1, hour: 9, value: 65 },
-                        { day: 1, hour: 10, value: 54 },
-                        { day: 1, hour: 11, value: 32 },
-                        { day: 1, hour: 12, value: 68 },
-                        { day: 1, hour: 13, value: 20 },
-                        { day: 1, hour: 14, value: 87 },
-                        { day: 1, hour: 15, value: 23 },
-                        { day: 1, hour: 16, value: 26 },
-                        { day: 1, hour: 17, value: 27 },
-                        { day: 1, hour: 18, value: 29 },
-                        { day: 1, hour: 19, value: 20 },
-                        { day: 1, hour: 21, value: 22 },
-                        { day: 1, hour: 20, value: 74 },
-                        { day: 1, hour: 22, value: 11 },
-                        { day: 1, hour: 23, value: 16 },
-                        { day: 1, hour: 24, value: 1 },
-                        { day: 2, hour: 1, value: 220 },
-                        { day: 2, hour: 2, value: 20 },
-                        { day: 2, hour: 3, value: 20 },
-                        { day: 2, hour: 4, value: 20 },
-                        { day: 2, hour: 5, value: 20 },
-                        { day: 2, hour: 6, value: 20 },
-                        { day: 2, hour: 7, value: 20 },
-                        { day: 2, hour: 8, value: 20 },
-                        { day: 2, hour: 9, value: 20 },
-                        { day: 2, hour: 10, value: 20 },
-                        { day: 2, hour: 11, value: 20 },
-                        { day: 2, hour: 12, value: 20 },
-                        { day: 2, hour: 13, value: 20 },
-                        { day: 2, hour: 14, value: 20 },
-                        { day: 2, hour: 15, value: 20 },
-                        { day: 2, hour: 16, value: 20 },
-                        { day: 2, hour: 17, value: 20 },
-                        { day: 2, hour: 18, value: 20 },
-                        { day: 2, hour: 19, value: 20 },
-                        { day: 2, hour: 20, value: 74 },
-                        { day: 2, hour: 21, value: 20 },
-                        { day: 2, hour: 22, value: 20 },
-                        { day: 2, hour: 23, value: 20 },
-                        { day: 2, hour: 24, value: 20 },
-                        { day: 3, hour: 1, value: 220 },
-                        { day: 3, hour: 2, value: 20 },
-                        { day: 3, hour: 3, value: 20 },
-                        { day: 3, hour: 4, value: 20 },
-                        { day: 3, hour: 5, value: 20 },
-                        { day: 3, hour: 6, value: 20 },
-                        { day: 3, hour: 7, value: 20 },
-                        { day: 3, hour: 8, value: 20 },
-                        { day: 3, hour: 9, value: 20 },
-                        { day: 3, hour: 10, value: 20 },
-                        { day: 3, hour: 11, value: 20 },
-                        { day: 3, hour: 12, value: 20 },
-                        { day: 3, hour: 13, value: 20 },
-                        { day: 3, hour: 14, value: 20 },
-                        { day: 3, hour: 15, value: 20 },
-                        { day: 3, hour: 16, value: 20 },
-                        { day: 3, hour: 17, value: 20 },
-                        { day: 3, hour: 18, value: 20 },
-                        { day: 3, hour: 19, value: 20 },
-                        { day: 3, hour: 20, value: 74 },
-                        { day: 3, hour: 21, value: 20 },
-                        { day: 3, hour: 22, value: 20 },
-                        { day: 3, hour: 23, value: 20 },
-                        { day: 3, hour: 24, value: 20 },
-                        { day: 4, hour: 1, value: 220 },
-                        { day: 4, hour: 2, value: 20 },
-                        { day: 4, hour: 3, value: 20 },
-                        { day: 4, hour: 4, value: 20 },
-                        { day: 4, hour: 5, value: 20 },
-                        { day: 4, hour: 6, value: 20 },
-                        { day: 4, hour: 7, value: 20 },
-                        { day: 4, hour: 8, value: 20 },
-                        { day: 4, hour: 9, value: 20 },
-                        { day: 4, hour: 10, value: 20 },
-                        { day: 4, hour: 11, value: 20 },
-                        { day: 4, hour: 12, value: 20 },
-                        { day: 4, hour: 13, value: 20 },
-                        { day: 4, hour: 14, value: 20 },
-                        { day: 4, hour: 15, value: 20 },
-                        { day: 4, hour: 16, value: 20 },
-                        { day: 4, hour: 17, value: 20 },
-                        { day: 4, hour: 18, value: 20 },
-                        { day: 4, hour: 19, value: 20 },
-                        { day: 4, hour: 20, value: 74 },
-                        { day: 4, hour: 21, value: 20 },
-                        { day: 4, hour: 22, value: 20 },
-                        { day: 4, hour: 23, value: 20 },
-                        { day: 4, hour: 24, value: 20 },
-                        { day: 5, hour: 1, value: 220 },
-                        { day: 5, hour: 2, value: 20 },
-                        { day: 5, hour: 3, value: 20 },
-                        { day: 5, hour: 4, value: 20 },
-                        { day: 5, hour: 5, value: 20 },
-                        { day: 5, hour: 6, value: 20 },
-                        { day: 5, hour: 7, value: 20 },
-                        { day: 5, hour: 8, value: 20 },
-                        { day: 5, hour: 9, value: 20 },
-                        { day: 5, hour: 10, value: 20 },
-                        { day: 5, hour: 11, value: 20 },
-                        { day: 5, hour: 12, value: 20 },
-                        { day: 5, hour: 13, value: 20 },
-                        { day: 5, hour: 14, value: 20 },
-                        { day: 5, hour: 15, value: 20 },
-                        { day: 5, hour: 16, value: 20 },
-                        { day: 5, hour: 17, value: 20 },
-                        { day: 5, hour: 18, value: 20 },
-                        { day: 5, hour: 19, value: 20 },
-                        { day: 5, hour: 20, value: 74 },
-                        { day: 5, hour: 21, value: 20 },
-                        { day: 5, hour: 22, value: 20 },
-                        { day: 5, hour: 23, value: 20 },
-                        { day: 5, hour: 24, value: 20 },
-                        { day: 6, hour: 1, value: 220 },
-                        { day: 6, hour: 2, value: 20 },
-                        { day: 6, hour: 3, value: 20 },
-                        { day: 6, hour: 4, value: 20 },
-                        { day: 6, hour: 5, value: 20 },
-                        { day: 6, hour: 6, value: 20 },
-                        { day: 6, hour: 7, value: 20 },
-                        { day: 6, hour: 8, value: 0 },
-                        { day: 6, hour: 9, value: 20 },
-                        { day: 6, hour: 10, value: 20 },
-                        { day: 6, hour: 11, value: 20 },
-                        { day: 6, hour: 12, value: 20 },
-                        { day: 6, hour: 13, value: 20 },
-                        { day: 6, hour: 14, value: 20 },
-                        { day: 6, hour: 15, value: 20 },
-                        { day: 6, hour: 16, value: 20 },
-                        { day: 6, hour: 17, value: 20 },
-                        { day: 6, hour: 18, value: 20 },
-                        { day: 6, hour: 19, value: 20 },
-                        { day: 6, hour: 20, value: 75},
-                        { day: 6, hour: 21, value: 64 },
-                        { day: 6, hour: 22, value: 54 },
-                        { day: 6, hour: 23, value: 34 },
-                        { day: 6, hour: 24, value: 2 },
-                        { day: 7, hour: 1, value: 220 },
-                        { day: 7, hour: 2, value: 5 },
-                        { day: 7, hour: 3, value: 60 },
-                        { day: 7, hour: 4, value: 80 },
-                        { day: 7, hour: 5, value: 70 },
-                        { day: 7, hour: 6, value: 60 },
-                        { day: 7, hour: 7, value: 50 },
-                        { day: 7, hour: 8, value: 40 },
-                        { day: 7, hour: 9, value: 30 },
-                        { day: 7, hour: 10, value: 20 },
-                        { day: 7, hour: 11, value: 89 },
-                        { day: 7, hour: 12, value: 98 },
-                        { day: 7, hour: 13, value: 3 },
-                        { day: 7, hour: 14, value: 2 },
-                        { day: 7, hour: 15, value: 3 },
-                        { day: 7, hour: 16, value: 20 },
-                        { day: 7, hour: 17, value: 211 },
-                        { day: 7, hour: 18, value: 1 },
-                        { day: 7, hour: 19, value: 243 },
-                        { day: 7, hour: 20, value: 74 },
-                        { day: 7, hour: 21, value: 54 },
-                        { day: 7, hour: 22, value: 120 },
-                        { day: 7, hour: 23, value: 233 },
-                        { day: 7, hour: 24, value: 22 },
+                    var sentimentData = [];
 
-                    ];
-
-
-                    console.log("working 1");
+                    console.log(tweets.length);
                     //Looping for each tweet and adding the variables to the arrays
                     for (var i in tweets) {
-
                         var tweet = tweets[i];
 
                         //Tweet stuff
@@ -228,10 +117,12 @@
                         retweets.push(tweet["retweets"]);
                         likes.push(tweet["likes"]);
                         sentimentScore.push(tweet["sentiment"]);
-                        
-
+                        if(i < 250) {
+                            sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
+                        }
                     }
-                    console.log("working");
+                    console.log(sentimentData);
+                    var heatData = getHeatData(dates);
 
                     //Printing to output
                     for (var i = 0; i < tweets.length; i++) {
@@ -257,9 +148,10 @@
                     }
 
                     //Drawing the bar chart
-                    drawBarChart(tweetLengths);
+                    // drawBarChart(tweetLengths);
                     //drawScatterChart(scatterData);
                     drawHeatmapChart(heatData);
+                    drawSentimentChart(sentimentData);
                 }
 
 
@@ -355,14 +247,14 @@
             //using http://bl.ocks.org/tjdecke/5558084
 
             var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-                width = 960 - margin.left - margin.right,
-                height = 430 - margin.top - margin.bottom,
+                width = 700 - margin.left - margin.right,
+                height = 350 - margin.top - margin.bottom,
                 gridSize = Math.floor(width / 24),
-                legendElementWidth = gridSize * 2,
+                legendElementWidth = gridSize * 2.66666666667,
                 buckets = 9,
                 colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
                 days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-                times = ["1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12am", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12pm"];
+                times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
 
 
             var svg = d3.select(".heatMap").append("svg")
@@ -392,14 +284,14 @@
                 .attr("class", function (d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
 
             var heatmapChart = function (data) {
-                
+
                 var colorScale = d3.scale.quantile()
                     .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
                     .range(colors);
 
                 var cards = svg.selectAll(".hour")
-                    .data(data, function (d) { return d.day + ':' + d.hour;});
-                
+                    .data(data, function (d) { return d.day + ':' + d.hour; });
+
                 cards.append("title");
 
                 cards.enter().append("rect")
@@ -445,6 +337,63 @@
 
             heatmapChart(data);
         }
+
+        function drawSentimentChart(data) {
+
+            var margin = { top: 20, right: 30, bottom: 40, left: 30 },
+                width = 500 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var x = d3.scale.linear()
+                .range([0, width]);
+
+            var y = d3.scale.ordinal()
+                .rangeRoundBands([0, height], 0.1);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickSize(0)
+                .tickPadding(6);
+
+            var svg = d3.select(".sentimentChart").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                x.domain(d3.extent(data, function (d) { return d.value; })).nice();
+                y.domain(data.map(function (d) { return d.name; }));
+
+                svg.selectAll(".bar")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", function (d) { return "bar bar--" + (d.value < 0 ? "negative" : "positive"); })
+                    .attr("x", function (d) { return x(Math.min(0, d.value)); })
+                    .attr("y", function (d) { return y(d.name); })
+                    .attr("width", function (d) { return Math.abs(x(d.value) - x(0)); })
+                    .attr("height", y.rangeBand());
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis);
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + x(0) + ",0)")
+                    .call(yAxis);
+
+                svg.select(".y").selectAll("text")
+                    .each(function (d, i) {
+                            this.remove();
+
+                    });
+        };
     </script>
 
     <div id="inputContainer">
@@ -459,11 +408,7 @@
                 <textarea id="twitterOutput"></textarea>
             </ContentTemplate>
         </asp:UpdatePanel>
-
-        <div class="barChart">
-        </div>
-        <div class="scatterChart"></div>
-        <div class="heatMap"></div>
-
     </div>
+    <div class="sentimentChart"></div>
+    <div class="heatMap"></div>
 </asp:Content>

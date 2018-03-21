@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json.Linq;
 using SharpFinn;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Services;
 using System.Web.Services;
 using Tweetinvi;
+using Tweetinvi.Models;
+using Tweetinvi.Parameters;
 
 namespace BotDetection
 {
@@ -30,8 +33,27 @@ namespace BotDetection
         {
             Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
             var sentimentInstance = Sentiment.Instance;
-            var tweets = Timeline.GetUserTimeline(userID, 10);
-            var jsonString = tweets.ToJson();
+            var lastTweets = Timeline.GetUserTimeline(userID, 200).ToArray();
+
+            var allTweets = new List<ITweet>(lastTweets);
+            var beforeLast = allTweets;
+
+            while (lastTweets.Length > 0 && allTweets.Count <= 500)
+            {
+                var idOfOldestTweet = lastTweets.Select(x => x.Id).Min();
+                Console.WriteLine($"Oldest Tweet Id = {idOfOldestTweet}");
+
+                var timelineRequestParameters = new UserTimelineParameters
+                {
+                    // We ensure that we only get tweets that have been posted BEFORE the oldest tweet we received
+                    MaxId = idOfOldestTweet - 1,
+                    MaximumNumberOfTweetsToRetrieve = allTweets.Count > 480 ? (500 - allTweets.Count) : 200
+                };
+
+                lastTweets = Timeline.GetUserTimeline(userID, timelineRequestParameters).ToArray();
+                allTweets.AddRange(lastTweets);
+            }
+            var jsonString = allTweets.ToJson();
 
             //Using Json.NET to change json string to an array
             JArray parsedJson = JArray.Parse(jsonString);
@@ -39,12 +61,12 @@ namespace BotDetection
             SingleTweet[] tweetArr = new SingleTweet[parsedJson.Count()];
 
             //If an account was returned
-            if (tweets != null)
+            if (allTweets != null)
             {
                 //Loop for each tweet
                 for (int i = 0; i < parsedJson.Count(); i++)
                 {
-                   
+
                     //Initialise tweet object
                     //Making the json tweet an object
                     JObject tweet = JObject.Parse(parsedJson[i].ToString());
@@ -61,12 +83,12 @@ namespace BotDetection
                         Content = tweet["text"].ToString(),
                         retweets = (int)tweet["retweet_count"],
                         likes = (int)tweet["favorite_count"],
-                        sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).Sentiment
+                        sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).AverageSentimentTokens
 
                     };
-                
 
-                
+
+
                     //Loop through for all the hashtags and add them to the hashtag array
                     for (int j = 0; j < hashtags.Count(); j++)
                     {
@@ -76,11 +98,12 @@ namespace BotDetection
 
                     //Format the date/time for the tweet
                     tweetArr[i].PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-                    
+
 
                 }
             }
             
+
             return tweetArr;
         }
     }
