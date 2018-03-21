@@ -1,5 +1,5 @@
-﻿using Aylien.TextApi;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using SharpFinn;
 using System;
 using System.Linq;
 using System.Web.Script.Services;
@@ -22,9 +22,6 @@ namespace BotDetection
         string oAuthConsumerSecret = "I8tLmmWblYLzRuHUSTtxaXmfHVLiKm0wGA0G8elR0SK34qor3D";
         string oAuthAccessToken = "469737894-eMYLQcqUEyglEaURFMGgfW2IKYEVVSXZxcAwGZEh";
         string oAuthAccessSecret = "C51EiVsmfGT08Auxl5wwYUkByDTsdy9sQxvXj2Mw5VJ1p";
-        //Keys for Sentiment c# SDK
-        Client client = new Client("48a217c2", "000e2e66dcac9d404baf101d3d6dcac9");
-        public TwitterUser user = new TwitterUser();
 
 
         [WebMethod]
@@ -32,8 +29,8 @@ namespace BotDetection
         public Object GetTwitterDataJSON(string userID)
         {
             Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
-            
-            var tweets = Timeline.GetUserTimeline(userID, 60);
+            var sentimentInstance = Sentiment.Instance;
+            var tweets = Timeline.GetUserTimeline(userID, 10);
             var jsonString = tweets.ToJson();
 
             //Using Json.NET to change json string to an array
@@ -58,15 +55,18 @@ namespace BotDetection
                     //Setting the hashtags to an array to loop through
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
 
-                    tweetArr[i] = new SingleTweet();
+                    tweetArr[i] = new SingleTweet
+                    {
+                        tweetID = i,
+                        Content = tweet["text"].ToString(),
+                        retweets = (int)tweet["retweet_count"],
+                        likes = (int)tweet["favorite_count"],
+                        sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).Sentiment
 
-                    tweetArr[i].tweetID = i;
-                    tweetArr[i].Content = tweet["text"].ToString();
-                    tweetArr[i].retweets = (int)tweet["retweet_count"];
-                    tweetArr[i].likes = (int)tweet["favorite_count"];
-                    //Setting sentiment for tweet content
-                    tweetArr[i].sentiment = client.Sentiment(text: tweetArr[i].Content);
+                    };
+                
 
+                
                     //Loop through for all the hashtags and add them to the hashtag array
                     for (int j = 0; j < hashtags.Count(); j++)
                     {
@@ -76,10 +76,6 @@ namespace BotDetection
 
                     //Format the date/time for the tweet
                     tweetArr[i].PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-
-                    //Setting the user stuff
-                    //user.ScreenName = tweetuser["name"].ToString();
-                   // user.UserTweets.Add(currentTweet);
                     
 
                 }
