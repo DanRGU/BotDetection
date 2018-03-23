@@ -4,6 +4,9 @@
 
     <script type="text/javascript">
 
+        //Tweet Frequency how many posts per day / per hour
+        //RT time - (if the first 2 characters are RT or if RT = true get time of post and get time of original post then minus them and return time)
+
         function parseDate(input) {
             var date = new Date(input);
             var output = date.getHours() + " hour(s), " + date.getMinutes() + " minute(s), " + date.getSeconds() + "second(s)";
@@ -62,12 +65,10 @@
 
         function getData() {
             if ($("#userInput").val() == ""){
-                alert("Please enter a username");
+                d3.select(".error").style("display", "block");
                 return;
             }
-
             
-
             var dataParam = $("#userInput").val();
 
             $.ajax({
@@ -113,12 +114,13 @@
                         //Tweet stuff
                         content.push(tweet["Content"]);
                         dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
-                        tweetLengths.push(content[i].length);
+                       
                         retweets.push(tweet["retweets"]);
                         likes.push(tweet["likes"]);
                         sentimentScore.push(tweet["sentiment"]);
                         if(i < 250) {
                             sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
+                            tweetLengths.push(content[i].length);
                         }
                     }
                     console.log(sentimentData);
@@ -133,7 +135,7 @@
                             timeSince.push(0);
                         }
 
-                        $("#twitterOutput").append(
+                      /*  $("#twitterOutput").append(
                             content[i]
                             + "\nLength: "
                             + tweetLengths[i]
@@ -143,15 +145,27 @@
                             + "\n"
                             + "Tweet Analysis\n"
                             + "Sentiment Score : " + sentimentScore[i]
-                            + "\n\n");
+                            + "\n\n");*/
 
                     }
 
                     //Drawing the bar chart
-                    // drawBarChart(tweetLengths);
+                    drawBarChart(tweetLengths);
                     //drawScatterChart(scatterData);
                     drawHeatmapChart(heatData);
                     drawSentimentChart(sentimentData);
+
+                    $(function () {
+                        $('.sentimentChart, .barChart, .heatMap').css({ height: $(window).innerHeight() });
+                        $(window).resize(function () {
+                            $('.div1, .div2').css({ height: $(window).innerHeight() });
+                        });
+                    });
+
+                    $('html,body').animate({
+                        scrollTop: $(".sentimentChart").offset().top
+                    },
+                        'slow');
                 }
 
 
@@ -166,6 +180,8 @@
                 .append("div")
                 .style("width", function (d) { return d * 2 + "px"; })
                 .text(function (d) { return d; });
+
+            d3.select(".barChart").style("display","block");
         }
 
         function drawScatterChart(data) {
@@ -336,6 +352,7 @@
             };
 
             heatmapChart(data);
+            d3.select(".heatMap").style("display", "block");
         }
 
         function drawSentimentChart(data) {
@@ -393,22 +410,24 @@
                             this.remove();
 
                     });
+
+                d3.select(".sentimentChart").style("display","block");
         };
     </script>
-
-    <div id="inputContainer">
 
         <asp:UpdatePanel runat="server">
             <ContentTemplate>
                 <div id="submission">
                     <input id="userInput" />
                     <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                    <p class="error">Please put in a name</p>
                 </div>
 
                 <textarea id="twitterOutput"></textarea>
             </ContentTemplate>
         </asp:UpdatePanel>
-    </div>
+
     <div class="sentimentChart"></div>
     <div class="heatMap"></div>
+    <div class="barChart"></div>
 </asp:Content>

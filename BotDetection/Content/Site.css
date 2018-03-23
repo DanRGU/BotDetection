@@ -11,13 +11,13 @@
     padding-right: 15px;
 }
 
-#inputContainer {
+#submission {
     position: relative;
-    max-width: 50%;
+    max-width: 30%;
     margin-left: auto;
     margin-right: auto;
     border: none;
-    margin-top: 25%;
+    margin-top: 20%;
 }
 
 #userInput {
@@ -39,6 +39,7 @@
     width:100%;
     height:400px;
     margin-top:20px;
+    display:none;
 }
 
 #userSubmit {
@@ -116,4 +117,39 @@ circle {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
+}
+
+.heatMap svg, .sentimentChart svg {
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: middle;
+    display: block;
+}
+
+.barChart, .heatMap, .sentimentChart {
+
+    padding-top:25px;
+    padding-bottom:25px;
+
+}
+
+.heatMap {
+    background-color: #00B0FF;
+    display: none;
+}
+
+.sentimentChart {
+    display: none;
+    background-color: #40C4FF;
+}
+
+.barChart {
+    display: none;
+    background-color: #80D8FF;
+}
+
+.error {
+
+color:red;
+display:none;
 }

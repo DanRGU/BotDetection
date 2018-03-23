@@ -66,7 +66,8 @@ namespace SharpFinn
         {
             _words = new Dictionary<string, int>();
 
-            using (var file = new StreamReader("C:\\Users\\1308353\\Source\\Repos\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
+           // using (var file = new StreamReader("C:\\Users\\1308353\\Source\\Repos\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
+            using (var file = new StreamReader("C:\\Users\\danob\\Documents\\Uni\\Honours\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
             {
                 string line;
                 while ((line = file.ReadLine()) != null)
