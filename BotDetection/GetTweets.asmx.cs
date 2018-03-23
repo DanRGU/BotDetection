@@ -74,8 +74,18 @@ namespace BotDetection
                     JObject tweetuser = JObject.Parse(parsedJson[i]["user"].ToString());
                     //Setting the entity to an object to query against
                     JObject entity = JObject.Parse(parsedJson[i]["entities"].ToString());
+                    JObject retweet = new JObject();
+
+                    //Setting the retweeted status
+                    if ((bool)tweet["retweeted"])
+                    {
+                        retweet = JObject.Parse(parsedJson[i]["retweeted_status"].ToString());
+                    }
+                    
                     //Setting the hashtags to an array to loop through
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
+
+
 
                     tweetArr[i] = new SingleTweet
                     {
@@ -83,12 +93,17 @@ namespace BotDetection
                         Content = tweet["text"].ToString(),
                         retweets = (int)tweet["retweet_count"],
                         likes = (int)tweet["favorite_count"],
-                        sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).AverageSentimentTokens
+                        sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).AverageSentimentTokens,
+                        PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
+                        Retweeted = (bool)tweet["retweeted"],
+
 
                     };
 
-
-
+                    if ((bool)tweet["retweeted"])
+                    {
+                        tweetArr[i].RetweetTime = DateTime.ParseExact(retweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    }
                     //Loop through for all the hashtags and add them to the hashtag array
                     for (int j = 0; j < hashtags.Count(); j++)
                     {
@@ -96,13 +111,11 @@ namespace BotDetection
                         tweetArr[i].Hashtags.Add(hashtagContent["text"].ToString());
                     }
 
-                    //Format the date/time for the tweet
-                    tweetArr[i].PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
 
                 }
             }
-            
+
 
             return tweetArr;
         }

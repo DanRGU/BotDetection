@@ -7,10 +7,42 @@
         //Tweet Frequency how many posts per day / per hour
         //RT time - (if the first 2 characters are RT or if RT = true get time of post and get time of original post then minus them and return time)
 
+       
+            $(function () {
+                $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+                $(window).resize(function () {
+                    $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+                });
+            });
+
+        $(function () {
+            $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ witdh: $(window).innerWidth() });
+            $(window).resize(function () {
+                $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ width: $(window).innerWidth() });
+            });
+        });
+
         function parseDate(input) {
             var date = new Date(input);
             var output = date.getHours() + " hour(s), " + date.getMinutes() + " minute(s), " + date.getSeconds() + "second(s)";
             return output;
+        }
+
+        function convertMS(milliseconds) {
+            var day, hour, minute, seconds;
+            seconds = Math.floor(milliseconds / 1000);
+            minute = Math.floor(seconds / 60);
+            seconds = seconds % 60;
+            hour = Math.floor(minute / 60);
+            minute = minute % 60;
+            day = Math.floor(hour / 24);
+            hour = hour % 24;
+            return {
+                day: day,
+                hour: hour,
+                minute: minute,
+                seconds: seconds
+            };
         }
         //return the day of the week +1 (1-7)
         function checkDay(date) {
@@ -64,11 +96,11 @@
         }
 
         function getData() {
-            if ($("#userInput").val() == ""){
+            if ($("#userInput").val() == "") {
                 d3.select(".error").style("display", "block");
                 return;
             }
-            
+
             var dataParam = $("#userInput").val();
 
             $.ajax({
@@ -97,33 +129,40 @@
 
                     //test
                     //Initialising the variables for the tweets
+                    var id = [];
                     var content = [];
                     var retweets = [];
                     var likes = [];
                     var dates = [];
+                    var retweeted = [];
                     var tweetLengths = [];
                     var timeSince = [];
                     var sentimentScore = [];
                     var sentimentData = [];
+                    var retweetTimes = [];
+                    var originalTimes = [];
 
-                    console.log(tweets.length);
                     //Looping for each tweet and adding the variables to the arrays
                     for (var i in tweets) {
                         var tweet = tweets[i];
 
                         //Tweet stuff
+                        id.push(tweet["tweetID"]);
                         content.push(tweet["Content"]);
                         dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
-                       
+                        originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
+                        retweeted.push(tweet["Retweeted"]);
                         retweets.push(tweet["retweets"]);
                         likes.push(tweet["likes"]);
                         sentimentScore.push(tweet["sentiment"]);
-                        if(i < 250) {
+
+                        if (i < 250) {
                             sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
                             tweetLengths.push(content[i].length);
                         }
                     }
-                    console.log(sentimentData);
+
+
                     var heatData = getHeatData(dates);
 
                     //Printing to output
@@ -135,7 +174,12 @@
                             timeSince.push(0);
                         }
 
-                      /*  $("#twitterOutput").append(
+                        
+                            var time = convertMS(dates[i] - originalTimes[i]);
+                            retweetTimes.push({ id: id, rtTime: time });
+                        
+
+                        $("#twitterOutput").append(
                             content[i]
                             + "\nLength: "
                             + tweetLengths[i]
@@ -145,9 +189,12 @@
                             + "\n"
                             + "Tweet Analysis\n"
                             + "Sentiment Score : " + sentimentScore[i]
-                            + "\n\n");*/
+                            + "\n Retweeted " + retweeted[i]
+                            + "\nRetweeted in " + retweetTimes[i].rtTime.day + " days, " + retweetTimes[i].rtTime.hour + " hours, " + retweetTimes[i].rtTime.minute + " minutes, " + retweetTimes[i].rtTime.seconds + " seconds"
+                            + "\n\n");
 
                     }
+                    
 
                     //Drawing the bar chart
                     drawBarChart(tweetLengths);
@@ -155,12 +202,6 @@
                     drawHeatmapChart(heatData);
                     drawSentimentChart(sentimentData);
 
-                    $(function () {
-                        $('.sentimentChart, .barChart, .heatMap').css({ height: $(window).innerHeight() });
-                        $(window).resize(function () {
-                            $('.div1, .div2').css({ height: $(window).innerHeight() });
-                        });
-                    });
 
                     $('html,body').animate({
                         scrollTop: $(".sentimentChart").offset().top
@@ -170,6 +211,7 @@
 
 
             });
+            console.log(d3.select(".heatMap").style("width"));
         }
 
         function drawBarChart(data) {
@@ -181,7 +223,7 @@
                 .style("width", function (d) { return d * 2 + "px"; })
                 .text(function (d) { return d; });
 
-            d3.select(".barChart").style("display","block");
+            d3.select(".barChart").style("display", "flex");
         }
 
         function drawScatterChart(data) {
@@ -263,12 +305,13 @@
             //using http://bl.ocks.org/tjdecke/5558084
 
             var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-                width = 700 - margin.left - margin.right,
-                height = 350 - margin.top - margin.bottom,
+                width = 900 - margin.left - margin.right,
+                height = 550 - margin.top - margin.bottom,
                 gridSize = Math.floor(width / 24),
                 legendElementWidth = gridSize * 2.66666666667,
                 buckets = 9,
                 colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
+                //colors = ['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b'];
                 days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
                 times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
 
@@ -352,7 +395,7 @@
             };
 
             heatmapChart(data);
-            d3.select(".heatMap").style("display", "block");
+            d3.select(".heatMap").style("display", "flex");
         }
 
         function drawSentimentChart(data) {
@@ -383,49 +426,49 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                x.domain(d3.extent(data, function (d) { return d.value; })).nice();
-                y.domain(data.map(function (d) { return d.name; }));
+            x.domain(d3.extent(data, function (d) { return d.value; })).nice();
+            y.domain(data.map(function (d) { return d.name; }));
 
-                svg.selectAll(".bar")
-                    .data(data)
-                    .enter().append("rect")
-                    .attr("class", function (d) { return "bar bar--" + (d.value < 0 ? "negative" : "positive"); })
-                    .attr("x", function (d) { return x(Math.min(0, d.value)); })
-                    .attr("y", function (d) { return y(d.name); })
-                    .attr("width", function (d) { return Math.abs(x(d.value) - x(0)); })
-                    .attr("height", y.rangeBand());
+            svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", function (d) { return "bar bar--" + (d.value < 0 ? "negative" : "positive"); })
+                .attr("x", function (d) { return x(Math.min(0, d.value)); })
+                .attr("y", function (d) { return y(d.name); })
+                .attr("width", function (d) { return Math.abs(x(d.value) - x(0)); })
+                .attr("height", y.rangeBand());
 
-                svg.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(xAxis);
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
 
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .attr("transform", "translate(" + x(0) + ",0)")
-                    .call(yAxis);
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + x(0) + ",0)")
+                .call(yAxis);
 
-                svg.select(".y").selectAll("text")
-                    .each(function (d, i) {
-                            this.remove();
+            svg.select(".y").selectAll("text")
+                .each(function (d, i) {
+                    this.remove();
 
-                    });
+                });
 
-                d3.select(".sentimentChart").style("display","block");
+            d3.select(".sentimentChart").style("display", "flex");
         };
     </script>
 
-        <asp:UpdatePanel runat="server">
-            <ContentTemplate>
-                <div id="submission">
-                    <input id="userInput" />
-                    <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                    <p class="error">Please put in a name</p>
-                </div>
+    <asp:UpdatePanel runat="server">
+        <ContentTemplate>
+            <div id="submission">
+                <input id="userInput" />
+                <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                <p class="error">Please put in a name</p>
+            </div>
 
-                <textarea id="twitterOutput"></textarea>
-            </ContentTemplate>
-        </asp:UpdatePanel>
+            <textarea id="twitterOutput"></textarea>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 
     <div class="sentimentChart"></div>
     <div class="heatMap"></div>
