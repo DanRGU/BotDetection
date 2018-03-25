@@ -118,36 +118,26 @@ circle {
     shape-rendering: crispEdges;
 }
 
-.heatMap svg, .sentimentChart svg {
+.pieChart svg, .heatMap svg, .sentimentChart svg {
     margin-left: auto;
     margin-right: auto;
     vertical-align: middle;
     display: block;
 }
 
-.barChart, .heatMap, .sentimentChart {
-
-    padding-top:25px;
-    padding-bottom:25px;
-
+.heatMap, .sentimentChart, .pieChart {
+    padding-top: 25px;
+    padding-bottom: 25px;
 }
 
-.heatMap {
-    background-color: #00B0FF;
+
+
+.pieChart, .heatMap, .sentimentChart {
     display: none;
+    background-color: white;
     align-items: center;
 }
 
-.sentimentChart {
-    display: none;
-    background-color: #40C4FF;
-    align-items: center;
-}
-
-.barChart {
-    display: none;
-    background-color: #80D8FF;
-}
 
 .error {
 

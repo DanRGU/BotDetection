@@ -7,18 +7,18 @@
         //Tweet Frequency how many posts per day / per hour
         //RT time - (if the first 2 characters are RT or if RT = true get time of post and get time of original post then minus them and return time)
 
-       
-            $(function () {
-                $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
-                $(window).resize(function () {
-                    $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
-                });
-            });
 
         $(function () {
-            $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ witdh: $(window).innerWidth() });
+            $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
             $(window).resize(function () {
-                $('.sentimentChart, .barChart, .heatMap, #MainContent_ctl00').css({ width: $(window).innerWidth() });
+                $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+            });
+        });
+
+        $(function () {
+            $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ witdh: $(window).innerWidth() });
+            $(window).resize(function () {
+                $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ width: $(window).innerWidth() });
             });
         });
 
@@ -30,13 +30,22 @@
 
         function convertMS(milliseconds) {
             var day, hour, minute, seconds;
-            seconds = Math.floor(milliseconds / 1000);
-            minute = Math.floor(seconds / 60);
-            seconds = seconds % 60;
-            hour = Math.floor(minute / 60);
-            minute = minute % 60;
-            day = Math.floor(hour / 24);
-            hour = hour % 24;
+            if (milliseconds < 636150829400 && milliseconds > 0) {
+
+                seconds = Math.floor(milliseconds / 1000);
+                minute = Math.floor(seconds / 60);
+                seconds = seconds % 60;
+                hour = Math.floor(minute / 60);
+                minute = minute % 60;
+                day = Math.floor(hour / 24);
+                hour = hour % 24;
+            }
+            else {
+                seconds = 0;
+                minute = 0;
+                hour = 0;
+                day = 999999;
+            }
             return {
                 day: day,
                 hour: hour,
@@ -95,6 +104,39 @@
             return output;
         }
 
+        function getPieData(input) {
+            var values = [0, 0, 0, 0, 0];
+
+            for (var i = 0; i < input.length; i++){
+                if (input[i].rtTime.day != 999999){
+                    //More than 3 days
+                    if (input[i].rtTime.day > 5) {
+                        values[4]++;
+                    }
+                    //between 1 and 5 days
+                    if (input[i].rtTime.day > 0 && input[i].rtTime.day <= 5) {
+                        values[3]++;
+                    }
+                    //Less than a day but > 1 hour
+                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour < 0) {
+                        values[2]++;
+                    }
+                    //less than an hour but more than 30 seconds
+                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute > 0 || input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute < 0 && input[i].rtTime.seconds > 30) {
+                        values[1]++;
+                    }
+                    //less than 30 seconds
+                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute == 0 && input[i].rtTime.seconds < 31) {
+                        values[0]++;
+                    }
+                }
+            }
+
+            var output = [];
+            output.push({ label: "> 3 Days", count: values[4] }, { label: "1 - 5 Days", count: values[3] }, { label: "< a Day", count: values[2] }, { label: "< 1 Hour", count: values[1] }, { label: "< 30 seconds", count: values[0] }, );
+            return output;
+        }
+
         function getData() {
             if ($("#userInput").val() == "") {
                 d3.select(".error").style("display", "block");
@@ -123,6 +165,11 @@
                             this.remove();
 
                         });
+                    d3.select(".pieChart").selectAll("svg")
+                        .each(function (d, i) {
+                            this.remove();
+
+                        });
 
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
@@ -141,6 +188,7 @@
                     var sentimentData = [];
                     var retweetTimes = [];
                     var originalTimes = [];
+                    
 
                     //Looping for each tweet and adding the variables to the arrays
                     for (var i in tweets) {
@@ -163,8 +211,7 @@
                     }
 
 
-                    var heatData = getHeatData(dates);
-
+                    
                     //Printing to output
                     for (var i = 0; i < tweets.length; i++) {
                         if (i < tweets.length - 1) {
@@ -174,10 +221,11 @@
                             timeSince.push(0);
                         }
 
-                        
-                            var time = convertMS(dates[i] - originalTimes[i]);
-                            retweetTimes.push({ id: id, rtTime: time });
-                        
+                        var time = convertMS(dates[i] - originalTimes[i]);
+
+                        retweetTimes.push({ id: id[i], rtTime: time });
+
+                       
 
                         $("#twitterOutput").append(
                             content[i]
@@ -195,13 +243,13 @@
 
                     }
                     
-
-                    //Drawing the bar chart
-                    drawBarChart(tweetLengths);
+                    var heatData = getHeatData(dates);
+                    var pieChartData = getPieData(retweetTimes);
+                    
                     //drawScatterChart(scatterData);
                     drawHeatmapChart(heatData);
                     drawSentimentChart(sentimentData);
-
+                    drawPieChart(pieChartData);
 
                     $('html,body').animate({
                         scrollTop: $(".sentimentChart").offset().top
@@ -211,19 +259,6 @@
 
 
             });
-            console.log(d3.select(".heatMap").style("width"));
-        }
-
-        function drawBarChart(data) {
-            d3.select(".barChart")
-                .selectAll("div")
-                .data(data)
-                .enter()
-                .append("div")
-                .style("width", function (d) { return d * 2 + "px"; })
-                .text(function (d) { return d; });
-
-            d3.select(".barChart").style("display", "flex");
         }
 
         function drawScatterChart(data) {
@@ -311,7 +346,6 @@
                 legendElementWidth = gridSize * 2.66666666667,
                 buckets = 9,
                 colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
-                //colors = ['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b'];
                 days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
                 times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
 
@@ -456,6 +490,68 @@
 
             d3.select(".sentimentChart").style("display", "flex");
         };
+
+        function drawPieChart(dataset) {
+
+            var width = 500;
+            var height = 500;
+            var radius = Math.min(width, height) / 2;
+            var donutWidth = 75;           
+            var color = d3.scale.category10();
+            var legendRectSize = 18;
+            var legendSpacing = 4;
+
+            var svg = d3.select('.pieChart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g')
+                .attr('transform', 'translate(' + (width / 2) +
+                ',' + (height / 2) + ')');
+
+            var arc = d3.svg.arc()
+                .innerRadius(radius - donutWidth)      
+                .outerRadius(radius);
+
+            var pie = d3.layout.pie()
+                .value(function (d) { return d.count; })
+                .sort(null);
+
+            var path = svg.selectAll('path')
+                .data(pie(dataset))
+                .enter()
+                .append('path')
+                .attr('d', arc)
+                .attr('fill', function (d, i) {
+                    return color(d.data.label);
+                });
+
+            var legend = svg.selectAll('.legend')
+                .data(color.domain())
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', function (d, i) {
+                    var height = legendRectSize + legendSpacing;
+                    var offset = height * color.domain().length / 2;
+                    var horz = -2 * legendRectSize;
+                    var vert = i * height - offset;
+                    return 'translate(' + horz + ',' + vert + ')';
+                });
+
+            legend.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style('fill', color)
+                .style('stroke', color);
+            legend.append('text')
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .text(function (d) { return d; });
+
+            d3.select(".pieChart").style("display", "flex");
+
+        }
     </script>
 
     <asp:UpdatePanel runat="server">
@@ -472,5 +568,5 @@
 
     <div class="sentimentChart"></div>
     <div class="heatMap"></div>
-    <div class="barChart"></div>
+    <div class="pieChart"></div>
 </asp:Content>

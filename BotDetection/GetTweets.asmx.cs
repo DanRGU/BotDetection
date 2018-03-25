@@ -76,11 +76,7 @@ namespace BotDetection
                     JObject entity = JObject.Parse(parsedJson[i]["entities"].ToString());
                     JObject retweet = new JObject();
 
-                    //Setting the retweeted status
-                    if ((bool)tweet["retweeted"])
-                    {
-                        retweet = JObject.Parse(parsedJson[i]["retweeted_status"].ToString());
-                    }
+                    
                     
                     //Setting the hashtags to an array to loop through
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
@@ -95,15 +91,16 @@ namespace BotDetection
                         likes = (int)tweet["favorite_count"],
                         sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).AverageSentimentTokens,
                         PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
-                        Retweeted = (bool)tweet["retweeted"],
 
 
                     };
-
-                    if ((bool)tweet["retweeted"])
+                    //Setting the retweeted status
+                    if (parsedJson[i]["retweeted_status"].ToString().GetType() == typeof(string) && parsedJson[i]["retweeted_status"].ToString() != "")
                     {
+                        retweet = JObject.Parse(parsedJson[i]["retweeted_status"].ToString());
                         tweetArr[i].RetweetTime = DateTime.ParseExact(retweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                     }
+
                     //Loop through for all the hashtags and add them to the hashtag array
                     for (int j = 0; j < hashtags.Count(); j++)
                     {

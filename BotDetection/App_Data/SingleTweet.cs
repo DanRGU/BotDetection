@@ -9,7 +9,6 @@ namespace BotDetection
         public string Content { get; set; }
         public DateTime PostTime { get; set; }
         public DateTime RetweetTime { get; set; }
-        public bool Retweeted { get; set; }
         public int retweets { get; set; }
         public int likes { get; set; }
         public ArrayList Hashtags { get; set; }
@@ -22,7 +21,6 @@ namespace BotDetection
             Hashtags = new ArrayList();
             PostTime = new DateTime();
             RetweetTime = new DateTime();
-            Retweeted = false;
             sentiment = 0.0;
             retweets = 0;
             likes = 0;
