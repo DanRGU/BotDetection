@@ -1,7 +1,28 @@
 ﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="BotDetection._Default" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+    <asp:UpdatePanel runat="server">
+        <ContentTemplate>
+            <div id="submission">
+                <input id="userInput" />
+                <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                <p class="error">Please put in a name</p>
+            </div>
 
+            <textarea id="twitterOutput"></textarea>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+
+    <div class="heatMap">
+        <h3>Heatmap of Tweets</h3>
+    </div>
+    <div class="pieChart">
+        <h3 class="section-title">Time taken to retweet</h3>
+    </div>
+    <div class="barChart"></div>
+    <div class="sentimentChart">
+        <h3>Sentiment of Tweets</h3>
+    </div>
     <script type="text/javascript">
 
         //Tweet Frequency how many posts per day / per hour
@@ -107,8 +128,9 @@
         function getPieData(input) {
             var values = [0, 0, 0, 0, 0];
 
-            for (var i = 0; i < input.length; i++){
-                if (input[i].rtTime.day != 999999){
+            for (var i = 0; i < input.length; i++) {
+
+                if (input[i].rtTime.day != 999999) {
                     //More than 3 days
                     if (input[i].rtTime.day > 5) {
                         values[4]++;
@@ -137,6 +159,24 @@
             return output;
         }
 
+        /**
+         * GLOBAL VARIABLES
+         */
+        var heatData;
+        var pieChartData;
+        var id = [];
+        var content = [];
+        var retweets = [];
+        var likes = [];
+        var dates = [];
+        var retweeted = [];
+        var tweetLengths = [];
+        var timeSince = [];
+        var sentimentScore = [];
+        var sentimentData = [];
+        var retweetTimes = [];
+        var originalTimes = [];
+
         function getData() {
             if ($("#userInput").val() == "") {
                 d3.select(".error").style("display", "block");
@@ -155,40 +195,13 @@
 
                 function (response) {
 
-                    d3.select(".sentimentChart").selectAll("svg")
-                        .each(function (d, i) {
-                            this.remove();
-
-                        });
-                    d3.select(".heatMap").selectAll("svg")
-                        .each(function (d, i) {
-                            this.remove();
-
-                        });
-                    d3.select(".pieChart").selectAll("svg")
-                        .each(function (d, i) {
-                            this.remove();
-
-                        });
-
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
 
                     //test
                     //Initialising the variables for the tweets
-                    var id = [];
-                    var content = [];
-                    var retweets = [];
-                    var likes = [];
-                    var dates = [];
-                    var retweeted = [];
-                    var tweetLengths = [];
-                    var timeSince = [];
-                    var sentimentScore = [];
-                    var sentimentData = [];
-                    var retweetTimes = [];
-                    var originalTimes = [];
-                    
+
+
 
                     //Looping for each tweet and adding the variables to the arrays
                     for (var i in tweets) {
@@ -210,9 +223,6 @@
                         }
                     }
 
-
-                    
-                    //Printing to output
                     for (var i = 0; i < tweets.length; i++) {
                         if (i < tweets.length - 1) {
                             timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
@@ -225,7 +235,6 @@
 
                         retweetTimes.push({ id: id[i], rtTime: time });
 
-                       
 
                         $("#twitterOutput").append(
                             content[i]
@@ -242,24 +251,25 @@
                             + "\n\n");
 
                     }
-                    
-                    var heatData = getHeatData(dates);
-                    var pieChartData = getPieData(retweetTimes);
-                    
+
+                    heatData = getHeatData(dates);
+                    pieChartData = getPieData(retweetTimes);
+
                     //drawScatterChart(scatterData);
                     drawHeatmapChart(heatData);
                     drawSentimentChart(sentimentData);
                     drawPieChart(pieChartData);
 
-                    $('html,body').animate({
-                        scrollTop: $(".sentimentChart").offset().top
-                    },
-                        'slow');
+                    $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
                 }
-
-
             });
         }
+
+        $(window).resize(function () {
+            drawHeatmapChart(heatData);
+            drawSentimentChart(sentimentData);
+            drawPieChart(pieChartData);
+        });
 
         function drawScatterChart(data) {
 
@@ -339,11 +349,17 @@
 
             //using http://bl.ocks.org/tjdecke/5558084
 
+            d3.select(".heatMap").selectAll("svg")
+                .each(function (d, i) {
+                    this.remove();
+
+                });
+
             var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-                width = 900 - margin.left - margin.right,
-                height = 550 - margin.top - margin.bottom,
+                width = $(window).innerWidth() / 2 - margin.left - margin.right,
+                height = $(window).innerHeight() / 2 - margin.top - margin.bottom,
                 gridSize = Math.floor(width / 24),
-                legendElementWidth = gridSize * 2.66666666667,
+                legendElementWidth = gridSize / 2,
                 buckets = 9,
                 colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
                 days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
@@ -412,16 +428,16 @@
 
                 legend.append("rect")
                     .attr("x", function (d, i) { return legendElementWidth * i; })
-                    .attr("y", height)
+                    .attr("y", gridSize * 7.3)
                     .attr("width", legendElementWidth)
                     .attr("height", gridSize / 2)
                     .style("fill", function (d, i) { return colors[i]; });
 
                 legend.append("text")
                     .attr("class", "mono")
-                    .text(function (d) { return "≥ " + Math.round(d); })
-                    .attr("x", function (d, i) { return legendElementWidth * i; })
-                    .attr("y", height + gridSize);
+                    .text("Low to High")
+                    .attr("x", legendElementWidth)
+                    .attr("y", gridSize * 8.3);
 
 
                 legend.exit().remove();
@@ -434,9 +450,15 @@
 
         function drawSentimentChart(data) {
 
+            d3.select(".sentimentChart").selectAll("svg")
+                .each(function (d, i) {
+                    this.remove();
+
+                });
+
             var margin = { top: 20, right: 30, bottom: 40, left: 30 },
-                width = 500 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom;
+                width = $(window).innerWidth() / 3 - margin.left - margin.right,
+                height = $(window).innerHeight() / 2 - margin.top - margin.bottom;
 
             var x = d3.scale.linear()
                 .range([0, width]);
@@ -493,10 +515,15 @@
 
         function drawPieChart(dataset) {
 
-            var width = 500;
-            var height = 500;
+            d3.select(".pieChart").selectAll("svg")
+                .each(function (d, i) {
+                    this.remove();
+
+                });
+            var width = $(window).innerWidth() / 2;
+            var height = $(window).innerHeight() / 2;
             var radius = Math.min(width, height) / 2;
-            var donutWidth = 75;           
+            var donutWidth = 75;
             var color = d3.scale.category10();
             var legendRectSize = 18;
             var legendSpacing = 4;
@@ -510,7 +537,7 @@
                 ',' + (height / 2) + ')');
 
             var arc = d3.svg.arc()
-                .innerRadius(radius - donutWidth)      
+                .innerRadius(radius - donutWidth)
                 .outerRadius(radius);
 
             var pie = d3.layout.pie()
@@ -554,19 +581,4 @@
         }
     </script>
 
-    <asp:UpdatePanel runat="server">
-        <ContentTemplate>
-            <div id="submission">
-                <input id="userInput" />
-                <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                <p class="error">Please put in a name</p>
-            </div>
-
-            <textarea id="twitterOutput"></textarea>
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <div class="sentimentChart"></div>
-    <div class="heatMap"></div>
-    <div class="pieChart"></div>
 </asp:Content>
