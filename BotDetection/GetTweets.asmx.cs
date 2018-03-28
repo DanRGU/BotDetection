@@ -76,9 +76,6 @@ namespace BotDetection
                     //Setting the entity to an object to query against
                     JObject entity = JObject.Parse(parsedJson[i]["entities"].ToString());
                     JObject retweet = new JObject();
-
-
-                    
                     
                     //Setting the hashtags to an array to loop through
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());

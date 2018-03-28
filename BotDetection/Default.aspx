@@ -14,6 +14,7 @@
     </asp:UpdatePanel>
         <div class="heatMap">
                 <h3>Heatmap of Users Tweets</h3>
+            <div class="innerHeatMap" style="display:flex;"></div>
             </div>  
         <div class="pieChart"><h3>Time taken to Retweet</h3></div>
         <div class="barChart"><h3>Frequency of User Tweets</h3></div>
@@ -283,7 +284,7 @@
 
                     $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
 
-                    /*   $(function () {
+                       $(function () {
                            //Keep track of last scroll
                            var divs = [".heatMap", ".pieChart", ".barChart", ".sentimentChart"];
                            var lastScroll = 0;
@@ -296,13 +297,17 @@
                                if (st > lastScroll) {
                                    //DOWN
                                    event.preventDefault();
+                                   event.stopPropagation();
                                    $('html, body').animate({
                                        scrollTop: $(divs[position]).offset().top
                                    }, 'slow');
                                    position++;
+                                   
                                }
                                else {
                                    //UP
+                                   event.preventDefault();
+                                   event.stopPropagation();
                                    $('html, body').animate({
                                        scrollTop: $(divs[position]-1).offset().top
                                    }, 'slow');
@@ -311,7 +316,7 @@
                                //Updates scroll position
                                lastScroll = st;
                            });
-                       });*/
+                       });
                 }
             });
         }
@@ -402,7 +407,7 @@
 
             //using http://bl.ocks.org/tjdecke/5558084
 
-            d3.select(".heatMap").selectAll("svg")
+            d3.select(".innerHeatMap").selectAll("svg")
                 .each(function (d, i) {
                     this.remove();
 
@@ -419,7 +424,7 @@
                 times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
 
 
-            var svg = d3.select(".heatMap").append("svg")
+            var svg = d3.select(".innerHeatMap").append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")
