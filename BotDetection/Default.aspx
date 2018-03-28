@@ -207,7 +207,7 @@
             var dataParam = $("#userInput").val();
 
             $.ajax({
-                url: "GetTweets.asmx/GetTwitterDataJSON",
+                url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
