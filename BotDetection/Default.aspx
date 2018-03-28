@@ -219,11 +219,8 @@
 
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
-
-                    //test
+                    
                     //Initialising the variables for the tweets
-
-
 
                     //Looping for each tweet and adding the variables to the arrays
                     for (var i in tweets) {
@@ -233,7 +230,7 @@
                         id.push(tweet["tweetID"]);
                         content.push(tweet["Content"]);
                         dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
-                        originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
+                        //originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
                         retweeted.push(tweet["Retweeted"]);
                         retweets.push(tweet["retweets"]);
                         likes.push(tweet["likes"]);
@@ -249,16 +246,16 @@
                         if (i < tweets.length - 1) {
                             timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
                         }
-                        else {
+                       else {
                             timeSince.push(0);
-                        }
+                       }
 
-                        var time = convertMS(dates[i] - originalTimes[i]);
+                    //    var time = convertMS(dates[i] - originalTimes[i]);
 
-                        retweetTimes.push({ id: id[i], rtTime: time });
+                    //    retweetTimes.push({ id: id[i], rtTime: time });
 
 
-                        $("#twitterOutput").append(
+                   /*     $("#twitterOutput").append(
                             content[i]
                             + "\nLength: "
                             + tweetLengths[i]
@@ -270,17 +267,17 @@
                             + "Sentiment Score : " + sentimentScore[i]
                             + "\n Retweeted " + retweeted[i]
                             + "\nRetweeted in " + retweetTimes[i].rtTime.day + " days, " + retweetTimes[i].rtTime.hour + " hours, " + retweetTimes[i].rtTime.minute + " minutes, " + retweetTimes[i].rtTime.seconds + " seconds"
-                            + "\n\n");
+                            + "\n\n");*/
 
                     }
                     heatData = getHeatData(dates);
-                    pieChartData = getPieData(retweetTimes);
-                    barChartData = getBarData(dates);
+                   // pieChartData = getPieData(retweetTimes);
+                   // barChartData = getBarData(dates);
 
-                    drawHeatmapChart(heatData);
+                  //  drawHeatmapChart(heatData);
                     drawSentimentChart(sentimentData);
-                    drawPieChart(pieChartData);
-                    drawBarChart(barChartData);
+                  //  drawPieChart(pieChartData);
+                  //  drawBarChart(barChartData);
 
                     $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
 
