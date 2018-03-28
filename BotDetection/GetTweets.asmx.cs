@@ -2,6 +2,7 @@
 using SharpFinn;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Script.Services;
 using System.Web.Services;
@@ -34,7 +35,7 @@ namespace BotDetection
             Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
             var sentimentInstance = Sentiment.Instance;
             var lastTweets = Timeline.GetUserTimeline(userID, 200).ToArray();
-
+            
             var allTweets = new List<ITweet>(lastTweets);
             var beforeLast = allTweets;
 
@@ -63,7 +64,7 @@ namespace BotDetection
             //If an account was returned
             if (allTweets != null)
             {
-
+                Trace.WriteLine(allTweets);
                 //Loop for each tweet
                 for (int i = 0; i < parsedJson.Count(); i++)
                 {
