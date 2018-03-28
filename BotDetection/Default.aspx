@@ -30,25 +30,26 @@
 
 
         $(function () {
-            $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
             $(window).resize(function () {
-                $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+                $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
             });
         });
 
         $(function () {
-            $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ witdh: $(window).innerWidth() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ witdh: $(window).innerWidth() });
             $(window).resize(function () {
-                $('.sentimentChart, .pieChart, .heatMap, #MainContent_ctl00').css({ width: $(window).innerWidth() });
+                $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
             });
         });
 
+        //Formatting the date for text output
         function parseDate(input) {
             var date = new Date(input);
             var output = date.getHours() + " hour(s), " + date.getMinutes() + " minute(s), " + date.getSeconds() + "second(s)";
             return output;
         }
-
+        //Convert a ms date to days, hours mins etc...
         function convertMS(milliseconds) {
             var day, hour, minute, seconds;
             if (milliseconds < 636150829400 && milliseconds > 0) {
@@ -94,6 +95,7 @@
 
             return arr;
         }
+
         //gather the data for the heatmap
         function getHeatData(input) {
             var days = createArray(7, 24);
@@ -125,6 +127,7 @@
             return output;
         }
 
+        //gather data for the pie chart
         function getPieData(input) {
             var values = [0, 0, 0, 0, 0];
 
@@ -159,11 +162,33 @@
             return output;
         }
 
+        //gather data for the bar chart
+        function getBarData(input) {
+            //need a list of months and how many tweets in those months
+            //in total or for this year?
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+            var output = [];
+            var values = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+            for (var i = 0; i < input.length; i++){
+                var month = input[i].getMonth();
+                values[month]++;
+            }
+            for (var j = 0; j < months.length; j++){
+                output.push(
+                    { letter: months[j], frequency: values[j] }, );
+            }
+
+            return output;
+        }
+
+
         /**
          * GLOBAL VARIABLES
          */
         var heatData;
         var pieChartData;
+        var barChartData;
         var id = [];
         var content = [];
         var retweets = [];
@@ -251,14 +276,14 @@
                             + "\n\n");
 
                     }
-
                     heatData = getHeatData(dates);
                     pieChartData = getPieData(retweetTimes);
+                    barChartData = getBarData(dates);
 
-                    //drawScatterChart(scatterData);
                     drawHeatmapChart(heatData);
                     drawSentimentChart(sentimentData);
                     drawPieChart(pieChartData);
+                    drawBarChart(barChartData);
 
                     $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
                 }
@@ -266,9 +291,11 @@
         }
 
         $(window).resize(function () {
+
             drawHeatmapChart(heatData);
             drawSentimentChart(sentimentData);
             drawPieChart(pieChartData);
+            drawBarChart(barChartData);
         });
 
         function drawScatterChart(data) {
@@ -579,6 +606,73 @@
             d3.select(".pieChart").style("display", "flex");
 
         }
+
+        function drawBarChart(data) {
+
+            d3.select(".barChart").selectAll("svg")
+                .each(function (d, i) {
+                    this.remove();
+
+                });
+            console.log(data);
+
+            var margin = { top: 40, right: 20, bottom: 30, left: 40 },
+                width = 960 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+            
+
+            var x = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1);
+
+            var y = d3.scale.linear()
+                .range([height, 0]);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+            var svg = d3.select(".barChart").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+            // The following code was contained in the callback function.
+            x.domain(data.map(function (d) { return d.letter; }));
+            y.domain([0, d3.max(data, function (d) { return d.frequency; })]);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Frequency");
+
+            svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d) { return x(d.letter); })
+                .attr("width", x.rangeBand())
+                .attr("y", function (d) { return y(d.frequency); })
+                .attr("height", function (d) { return height - y(d.frequency); })
+            
+                d3.select(".barChart").style("display", "flex");
+        }
+
     </script>
 
 </asp:Content>

@@ -118,26 +118,20 @@ circle {
     shape-rendering: crispEdges;
 }
 
-.pieChart svg, .heatMap svg, .sentimentChart svg {
+.pieChart svg, .heatMap svg, .sentimentChart svg, .barChart svg {
     margin-left: auto;
     margin-right: auto;
     vertical-align: middle;
     display: block;
 }
 
-.heatMap, .sentimentChart, .pieChart {
-    padding-top: 25px;
-    padding-bottom: 25px;
-}
-
-
-
-.pieChart, .heatMap, .sentimentChart {
+.barChart, .pieChart, .heatMap, .sentimentChart {
     display: none;
     background-color: white;
     align-items: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
 }
-
 
 .error {
 
@@ -145,8 +139,21 @@ color:red;
 display:none;
 }
 
-1 leek
-one onioon
-250g lentils
-5 med carrot (diced and grated)
-2 celery
+.bar {
+    fill: steelblue;
+}
+
+.axis text {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.x.axis path {
+    display: none;
+}
