@@ -63,6 +63,7 @@ namespace BotDetection
             //If an account was returned
             if (allTweets != null)
             {
+
                 //Loop for each tweet
                 for (int i = 0; i < parsedJson.Count(); i++)
                 {
@@ -75,6 +76,7 @@ namespace BotDetection
                     //Setting the entity to an object to query against
                     JObject entity = JObject.Parse(parsedJson[i]["entities"].ToString());
                     JObject retweet = new JObject();
+
 
                     
                     

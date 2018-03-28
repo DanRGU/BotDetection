@@ -12,21 +12,15 @@
             <textarea id="twitterOutput"></textarea>
         </ContentTemplate>
     </asp:UpdatePanel>
+        <div class="heatMap">
+                <h3>Heatmap of Users Tweets</h3>
+            </div>  
+        <div class="pieChart"><h3>Time taken to Retweet</h3></div>
+        <div class="barChart"><h3>Frequency of User Tweets</h3></div>
+        <div class="sentimentChart"><h3>Sentiment of Users Tweets</h3></div>
 
-    <div class="heatMap">
-        <h3>Heatmap of Tweets</h3>
-    </div>
-    <div class="pieChart">
-        <h3 class="section-title">Time taken to retweet</h3>
-    </div>
-    <div class="barChart"></div>
-    <div class="sentimentChart">
-        <h3>Sentiment of Tweets</h3>
-    </div>
-    <script type="text/javascript">
 
-        //Tweet Frequency how many posts per day / per hour
-        //RT time - (if the first 2 characters are RT or if RT = true get time of post and get time of original post then minus them and return time)
+    <script type="text/javascript">         
 
 
         $(function () {
@@ -42,6 +36,8 @@
                 $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
             });
         });
+
+
 
         //Formatting the date for text output
         function parseDate(input) {
@@ -168,13 +164,13 @@
             //in total or for this year?
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
             var output = [];
-            var values = [0,0,0,0,0,0,0,0,0,0,0,0];
+            var values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-            for (var i = 0; i < input.length; i++){
+            for (var i = 0; i < input.length; i++) {
                 var month = input[i].getMonth();
                 values[month]++;
             }
-            for (var j = 0; j < months.length; j++){
+            for (var j = 0; j < months.length; j++) {
                 output.push(
                     { letter: months[j], frequency: values[j] }, );
             }
@@ -286,6 +282,36 @@
                     drawBarChart(barChartData);
 
                     $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
+
+                    /*   $(function () {
+                           //Keep track of last scroll
+                           var divs = [".heatMap", ".pieChart", ".barChart", ".sentimentChart"];
+                           var lastScroll = 0;
+                           var position = 0;
+   
+                           $(window).scroll(function (event) {
+                               //Sets the current scroll position
+                               var st = $(this).scrollTop();
+                               //Determines up-or-down scrolling
+                               if (st > lastScroll) {
+                                   //DOWN
+                                   event.preventDefault();
+                                   $('html, body').animate({
+                                       scrollTop: $(divs[position]).offset().top
+                                   }, 'slow');
+                                   position++;
+                               }
+                               else {
+                                   //UP
+                                   $('html, body').animate({
+                                       scrollTop: $(divs[position]-1).offset().top
+                                   }, 'slow');
+                                   position--;
+                               }
+                               //Updates scroll position
+                               lastScroll = st;
+                           });
+                       });*/
                 }
             });
         }
@@ -383,8 +409,8 @@
                 });
 
             var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-                width = $(window).innerWidth() / 2 - margin.left - margin.right,
-                height = $(window).innerHeight() / 2 - margin.top - margin.bottom,
+                width = $(window).innerWidth() / 1.2 - margin.left - margin.right,
+                height = $(window).innerHeight() / 1.2 - margin.top - margin.bottom,
                 gridSize = Math.floor(width / 24),
                 legendElementWidth = gridSize / 2,
                 buckets = 9,
@@ -472,7 +498,7 @@
             };
 
             heatmapChart(data);
-            d3.select(".heatMap").style("display", "flex");
+            d3.select(".heatMap").style("display", "block");
         }
 
         function drawSentimentChart(data) {
@@ -484,8 +510,8 @@
                 });
 
             var margin = { top: 20, right: 30, bottom: 40, left: 30 },
-                width = $(window).innerWidth() / 3 - margin.left - margin.right,
-                height = $(window).innerHeight() / 2 - margin.top - margin.bottom;
+                width = $(window).innerWidth() / 1.5 - margin.left - margin.right,
+                height = $(window).innerHeight() / 1.5 - margin.top - margin.bottom;
 
             var x = d3.scale.linear()
                 .range([0, width]);
@@ -537,7 +563,7 @@
 
                 });
 
-            d3.select(".sentimentChart").style("display", "flex");
+            d3.select(".sentimentChart").style("display", "block");
         };
 
         function drawPieChart(dataset) {
@@ -547,8 +573,8 @@
                     this.remove();
 
                 });
-            var width = $(window).innerWidth() / 2;
-            var height = $(window).innerHeight() / 2;
+            var width = $(window).innerWidth() / 1.5;
+            var height = $(window).innerHeight() / 1.5;
             var radius = Math.min(width, height) / 2;
             var donutWidth = 75;
             var color = d3.scale.category10();
@@ -603,7 +629,7 @@
                 .attr('y', legendRectSize - legendSpacing)
                 .text(function (d) { return d; });
 
-            d3.select(".pieChart").style("display", "flex");
+            d3.select(".pieChart").style("display", "block");
 
         }
 
@@ -617,9 +643,9 @@
             console.log(data);
 
             var margin = { top: 40, right: 20, bottom: 30, left: 40 },
-                width = 960 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom;
-            
+                width = $(window).innerWidth() /1.5  - margin.left - margin.right,
+                height = $(window).innerHeight() /1.5 - margin.top - margin.bottom;
+
 
             var x = d3.scale.ordinal()
                 .rangeRoundBands([0, width], .1);
@@ -669,8 +695,8 @@
                 .attr("width", x.rangeBand())
                 .attr("y", function (d) { return y(d.frequency); })
                 .attr("height", function (d) { return height - y(d.frequency); })
-            
-                d3.select(".barChart").style("display", "flex");
+
+            d3.select(".barChart").style("display", "block");
         }
 
     </script>

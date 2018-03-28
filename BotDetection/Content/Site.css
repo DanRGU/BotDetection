@@ -1,9 +1,11 @@
 ﻿body {
-    padding-bottom: 20px;
-    background-color: aliceblue;
-
+    background-color: white;
 }
 
+.row{
+    margin-right:0;
+    margin-left:0;
+}
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -25,7 +27,7 @@
     height: 40px;
     font-size: 30px;
     padding-left: 5%;
-    border: none;
+    border: 1px solid gray;
     border-bottom-left-radius: 30px;
     border-top-left-radius: 30px;
 }
@@ -39,6 +41,7 @@
     width:100%;
     height:400px;
     margin-top:20px;
+    display:none;
 }
 
 #userSubmit {
@@ -46,7 +49,8 @@
     z-index: 30;
     width: 20%;
     height: 40px;
-    border: none;
+    border: 1px solid gray;
+    border-left:none;
     background-color: white;
     border-bottom-right-radius: 30px;
     border-top-right-radius: 30px;
@@ -70,19 +74,31 @@
     }
 }
 
+rect.bordered {
+    stroke: #E6E6E6;
+    stroke-width: 2px;
+}
+
+text.mono {
+    fill: #aaa;
+}
+
+text {
+    font-family: Consolas, courier;
+}
+
+text.axis-workweek {
+    fill: #000;
+}
+
+text.axis-worktime {
+    fill: #000;
+}
+
 .barChart{
     background-color:white;
     padding:3px;
 }
-
-    .barChart div {
-        font: 10px sans-serif;
-        background-color: steelblue;
-        text-align: right;
-        padding: 5px;
-        margin: 1px;
-        color: white;
-    }
 
 .main text {
     font: 10px sans-serif;
@@ -121,14 +137,14 @@ circle {
 .pieChart svg, .heatMap svg, .sentimentChart svg, .barChart svg {
     margin-left: auto;
     margin-right: auto;
-    vertical-align: middle;
     display: block;
+    transform-origin: 50% 50% 0px;
 }
 
 .barChart, .pieChart, .heatMap, .sentimentChart {
     display: none;
     background-color: white;
-    align-items: center;
+    position:relative;
     padding-top: 25px;
     padding-bottom: 25px;
 }
@@ -139,21 +155,24 @@ color:red;
 display:none;
 }
 
-.bar {
+.barChart .bar {
     fill: steelblue;
 }
 
-.axis text {
+.barChart .axis text {
     font: 10px sans-serif;
 }
 
-.axis path,
-.axis line {
+.barChart .axis path,
+.barChart .axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
 }
 
-.x.axis path {
+.barChart .x.axis path {
     display: none;
+}
+.pieChart h3, .heatMap h3, .sentimentChart h3, .barChart h3 {
+    text-align: center;
 }
