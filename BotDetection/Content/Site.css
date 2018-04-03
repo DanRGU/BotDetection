@@ -134,11 +134,18 @@ circle {
     shape-rendering: crispEdges;
 }
 
-.pieChart svg, .heatMap svg, .sentimentChart svg, .barChart svg {
-    margin-left: auto;
-    margin-right: auto;
+/*.pieChart svg, .innerHeatMap svg, .innerHeatMap2 svg, .sentimentChart svg, .barChart svg */
+
+svg{
+    margin: 0 auto;
     display: block;
-    transform-origin: 50% 50% 0px;
+    
+}
+
+
+.innerHeatMap, innerHeatMap2 {
+    display: flex;
+    height: 45%;
 }
 
 .barChart, .pieChart, .heatMap, .sentimentChart {
@@ -153,9 +160,10 @@ circle {
 
 color:red;
 display:none;
+
 }
 
-.barChart .bar {
+.innerBarChart  .bar, .innerBarChart2 .bar {
     fill: steelblue;
 }
 
@@ -175,4 +183,19 @@ display:none;
 }
 .pieChart h3, .heatMap h3, .sentimentChart h3, .barChart h3 {
     text-align: center;
+}
+
+
+.compare {
+
+text-align:center;
+}
+
+.compareButtons {
+
+text-align:center;
+}
+
+.heatButtons button{
+
 }

@@ -6,24 +6,86 @@
             <div id="submission">
                 <input id="userInput" />
                 <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                <p class="error">Please put in a name</p>
+                 <p class="error">Please put in a name</p>
             </div>
-
-            <textarea id="twitterOutput"></textarea>
         </ContentTemplate>
     </asp:UpdatePanel>
-        <div class="heatMap">
-                <h3>Heatmap of Users Tweets</h3>
-            <div class="innerHeatMap" style="display:flex;"></div>
-            </div>  
-        <div class="pieChart"><h3>Time taken to Retweet</h3></div>
-        <div class="barChart"><h3>Frequency of User Tweets</h3></div>
-        <div class="sentimentChart"><h3>Sentiment of Users Tweets</h3></div>
+   
+    <!--Heat Map Stuff-->
+    <div class="heatMap">
+        <h3>Heatmap of Users Tweets</h3>
+        <div class="innerHeatMap"></div>
+            <h3 id="heatCompareTitle">Example Heatmap of Human Tweets</h3>
+            <asp:UpdatePanel runat="server">
+                <ContentTemplate>
+                    <div class="compareButtons">
+                        <button id="humanHeatMap" type="button" class="btn btn-info" onclick="drawHumanHeatMap();">Human</button>
+                        <button id="botHeatMap" type="button" class="btn btn-info" onclick="drawBotHeatMap();">Bot</button>
+                        
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+            <div class="innerHeatMap2"></div>
+    </div>
+    <!--/Heat Map Stuff-->
+
+    <!--Pie Chart Stuff-->
+    <div class="pieChart row">   
+        <div class="innerPieChart col-md-6"> 
+            <h3>Time taken to Retweet</h3>
+        </div>
+            <div class="innerPieChart2 col-md-6">
+                <h3 id="pieCompareTitle">Example Pie Chart of Human Retweet times</h3>
+                <asp:UpdatePanel runat="server">
+                <ContentTemplate>
+                    <div class="compareButtons">
+                        <button id="humanPieChart" type="button" class="btn btn-info" onclick="drawHumanPieChart();">Human</button>
+                        <button id="botPieChart" type="button" class="btn btn-info" onclick="drawBotPieChart();">Bot</button>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+            </div>
+
+    </div>
+
+    <!--/Pie Chart Stuff-->
+
+    <!--Bar Chart Stuff-->
+    <div class="barChart row">
+        <div class="innerBarChart col-md-6"> 
+            <h3>Frequency of User Tweets</h3>
+        </div>
+            <div class="innerBarChart2 col-md-6">
+                <h3 id="barCompareTitle">Example Bar Chart of Human Tweet Frequency</h3>
+                <asp:UpdatePanel runat="server">
+                <ContentTemplate>
+                    <div class="compareButtons">
+                        <button id="humanBarChart" type="button" class="btn btn-info" onclick="drawHumanBarChart();">Human</button>
+                        <button id="botBarChart" type="button" class="btn btn-info" onclick="drawBotBarChart();">Bot</button>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+            </div>
+    </div>
+    <!--/Bar Chart Stuff-->
+
+    
+    <!--Sentiment Chart Stuff-->
+    <div class="sentimentChart">
+        <h3>Sentiment of Users Tweets</h3>
+    </div>
+    <!--/Sentiment Chart Stuff-->
+
+    <script type="text/javascript">      
+
+        //Global vars for switching between views (and on size change)
+        var heatMapDataReload = botHeatData;
+        var pieChartDataReload = botPieData;
+        var barChartDataReload = botBarData;
+        var lineChartDataReload = botHeatData;
 
 
-    <script type="text/javascript">         
-
-
+        //Setting the div sizes based on window size
         $(function () {
             $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
             $(window).resize(function () {
@@ -37,61 +99,6 @@
                 $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
             });
         });
-
-
-
-        //Formatting the date for text output
-        function parseDate(input) {
-            var date = new Date(input);
-            var output = date.getHours() + " hour(s), " + date.getMinutes() + " minute(s), " + date.getSeconds() + "second(s)";
-            return output;
-        }
-        //Convert a ms date to days, hours mins etc...
-        function convertMS(milliseconds) {
-            var day, hour, minute, seconds;
-            if (milliseconds < 636150829400 && milliseconds > 0) {
-
-                seconds = Math.floor(milliseconds / 1000);
-                minute = Math.floor(seconds / 60);
-                seconds = seconds % 60;
-                hour = Math.floor(minute / 60);
-                minute = minute % 60;
-                day = Math.floor(hour / 24);
-                hour = hour % 24;
-            }
-            else {
-                seconds = 0;
-                minute = 0;
-                hour = 0;
-                day = 999999;
-            }
-            return {
-                day: day,
-                hour: hour,
-                minute: minute,
-                seconds: seconds
-            };
-        }
-        //return the day of the week +1 (1-7)
-        function checkDay(date) {
-            return date.getDay() + 1;
-        }
-        //return the hour of the day +1 (to make it between 1-24)
-        function checkHour() {
-            return date.getHours() + 1;
-        }
-        //Create 2D array
-        function createArray(length) {
-            var arr = new Array(length || 0),
-                i = length;
-
-            if (arguments.length > 1) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                while (i--) arr[length - 1 - i] = createArray.apply(this, args);
-            }
-
-            return arr;
-        }
 
         //gather the data for the heatmap
         function getHeatData(input) {
@@ -179,36 +186,34 @@
             return output;
         }
 
-
-        /**
-         * GLOBAL VARIABLES
-         */
-        var heatData;
-        var pieChartData;
-        var barChartData;
-        var id = [];
-        var content = [];
-        var retweets = [];
-        var likes = [];
-        var dates = [];
-        var retweeted = [];
-        var tweetLengths = [];
-        var timeSince = [];
-        var sentimentScore = [];
-        var sentimentData = [];
-        var retweetTimes = [];
-        var originalTimes = [];
-
+        //Getting and formatting tweets (setting variables etc)
         function getData() {
             if ($("#userInput").val() == "") {
                 d3.select(".error").style("display", "block");
                 return;
             }
 
+            var heatData = [];
+            var pieChartData = [];
+            var barChartData = [];
+            var id = [];
+            var content = [];
+            var retweets = [];
+            var likes = [];
+            var dates = [];
+            var retweeted = [];
+            var tweetLengths = [];
+            var timeSince = [];
+            var sentimentScore = [];
+            var sentimentData = [];
+            var retweetTimes = [];
+            var originalTimes = [];
+
             var dataParam = $("#userInput").val();
 
             $.ajax({
-                url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
+                url: "/GetTweets.asmx/GetTwitterDataJSON",
+                //url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -219,7 +224,7 @@
 
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
-                    
+
                     //Initialising the variables for the tweets
 
                     //Looping for each tweet and adding the variables to the arrays
@@ -230,7 +235,7 @@
                         id.push(tweet["tweetID"]);
                         content.push(tweet["Content"]);
                         dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
-                        //originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
+                        originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
                         retweeted.push(tweet["Retweeted"]);
                         retweets.push(tweet["retweets"]);
                         likes.push(tweet["likes"]);
@@ -246,461 +251,504 @@
                         if (i < tweets.length - 1) {
                             timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
                         }
-                       else {
+                        else {
                             timeSince.push(0);
-                       }
+                        }
 
-                    //    var time = convertMS(dates[i] - originalTimes[i]);
+                        var time = convertMS(dates[i] - originalTimes[i]);
 
-                    //    retweetTimes.push({ id: id[i], rtTime: time });
-
-
-                   /*     $("#twitterOutput").append(
-                            content[i]
-                            + "\nLength: "
-                            + tweetLengths[i]
-                            + "\nOn " + dates[i].toUTCString()
-                            + "\n"
-                            + "Time since last post " + parseDate(timeSince[i])
-                            + "\n"
-                            + "Tweet Analysis\n"
-                            + "Sentiment Score : " + sentimentScore[i]
-                            + "\n Retweeted " + retweeted[i]
-                            + "\nRetweeted in " + retweetTimes[i].rtTime.day + " days, " + retweetTimes[i].rtTime.hour + " hours, " + retweetTimes[i].rtTime.minute + " minutes, " + retweetTimes[i].rtTime.seconds + " seconds"
-                            + "\n\n");*/
+                        retweetTimes.push({ id: id[i], rtTime: time });
 
                     }
+                    //Setting Data for charts
                     heatData = getHeatData(dates);
-                   // pieChartData = getPieData(retweetTimes);
-                   // barChartData = getBarData(dates);
+                    pieChartData = getPieData(retweetTimes);
+                    barChartData = getBarData(dates);
+                    console.log(pieChartData);
 
-                  //  drawHeatmapChart(heatData);
+
+                    //Drawing the charts
+                    drawHeatmapChart(heatData, ".innerHeatMap");
+                    drawHeatmapChart(botHeatData, ".innerHeatMap2");
+                    
+                    drawPieChart(pieChartData, ".innerPieChart");
+                    drawPieChart(botPieData, ".innerPieChart2");
+
+                    drawBarChart(barChartData, ".innerBarChart");
+                    drawBarChart(botBarData, ".innerBarChart2");
+
                     drawSentimentChart(sentimentData);
-                  //  drawPieChart(pieChartData);
-                  //  drawBarChart(barChartData);
+                    
 
                     $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
 
-                       $(function () {
-                           //Keep track of last scroll
-                           var divs = [".heatMap", ".pieChart", ".barChart", ".sentimentChart"];
-                           var lastScroll = 0;
-                           var position = 0;
-   
-                           $(window).scroll(function (event) {
-                               //Sets the current scroll position
-                               var st = $(this).scrollTop();
-                               //Determines up-or-down scrolling
-                               if (st > lastScroll) {
-                                   //DOWN
-                                   event.preventDefault();
-                                   event.stopPropagation();
-                                   $('html, body').animate({
-                                       scrollTop: $(divs[position]).offset().top
-                                   }, 'slow');
-                                   position++;
-                                   
-                               }
-                               else {
-                                   //UP
-                                   event.preventDefault();
-                                   event.stopPropagation();
-                                   $('html, body').animate({
-                                       scrollTop: $(divs[position]-1).offset().top
-                                   }, 'slow');
-                                   position--;
-                               }
-                               //Updates scroll position
-                               lastScroll = st;
-                           });
-                       });
+                    /*  $(function () {
+                          //Keep track of last scroll
+                          var divs = [".heatMap", ".pieChart", ".barChart", ".sentimentChart"];
+                          var lastScroll = 0;
+                          var position = 0;
+  
+                          $(window).scroll(function (event) {
+                              //Sets the current scroll position
+                              var st = $(this).scrollTop();
+                              //Determines up-or-down scrolling
+                              if (st > lastScroll) {
+                                  //DOWN
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  $('html, body').animate({
+                                      scrollTop: $(divs[position]).offset().top
+                                  }, 'slow');
+                                  position++;
+                                  
+                              }
+                              else {
+                                  //UP
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  $('html, body').animate({
+                                      scrollTop: $(divs[position]-1).offset().top
+                                  }, 'slow');
+                                  position--;
+                              }
+                              //Updates scroll position
+                              lastScroll = st;
+                          });
+                      });*/
                 }
+            });
+            $(window).resize(function () {
+
+                drawHeatmapChart(heatData, ".innerHeatMap");
+                drawHeatmapChart(heatMapDataReload, ".innerHeatMap2");
+
+              
+                drawPieChart(pieChartData, ".innerPieChart");
+                drawPieChart(pieChartDataReload, ".innerPieChart2");
+                
+                drawBarChart(barChartData, ".innerBarChart");
+                drawBarChart(barChartDataReload, ".innerBarChart2");
+
+                drawSentimentChart(sentimentData);
             });
         }
 
-        $(window).resize(function () {
-
-            drawHeatmapChart(heatData);
-            drawSentimentChart(sentimentData);
-            drawPieChart(pieChartData);
-            drawBarChart(barChartData);
-        });
-
-        function drawScatterChart(data) {
-
-            //drawing the scatter graph (issues with the Y axis numbering)
-            //setting margins
-            var margin = { top: 20, right: 15, bottom: 60, left: 60 }
-                , width = 500 - margin.top - margin.bottom
-                , height = 500 - margin.top - margin.bottom;
-
-            //
-            var x = d3.scale.linear()
-                .domain([-1, 1])
-                .range([0, width]);
-
-            var y = d3.scale.linear()
-                .domain([-1, 1])
-                .range([height, 0]);
-
-            var chart = d3.select('.scatterChart')
-                .append('svg:svg')
-                .attr('width', width + margin.right + margin.left)
-                .attr('height', height + margin.top + margin.bottom)
-                .attr('class', 'chart')
-
-            var main = chart.append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('class', 'main')
-
-            // draw the x axis
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient('bottom');
-
-            main.append('g')
-                .attr('transform', 'translate(0,' + height + ')')
-                .attr('class', 'main axis date')
-                .call(xAxis);
-
-            // draw the y axis
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient('left');
-
-            main.append('g')
-                .attr('transform', 'translate(0,0)')
-                .attr('class', 'main axis date')
-                .call(yAxis);
-
-            var g = main.append("svg:g");
-
-            g.selectAll("scatter-dots")
-                .data(data)
-                .enter().append("svg:circle")
-                .attr("cx", function (d, i) { return x(d[0]); })
-                .attr("cy", function (d) { return y(d[1]); })
-                .attr("r", 2);
-
-            chart.selectAll(".tick")
-                .each(function (d, i) {
-                    if (d != 1) {
-                        this.remove();
-                    }
-
-                });
-            chart.selectAll("text")
-                .each(function (d, i) {
-                    if (d != 1 && d != -1) {
-                        this.remove();
-                    }
-
-                });
+        //On button press draw the correct chart to compare against
+        //Heatmap
+        function drawBotHeatMap() {
+            $("#heatCompareTitle").html("Example Heatmap of Bot Tweets");
+            drawHeatmapChart(botHeatData, ".innerHeatMap2");
+            heatMapDataReload = botHeatData;
+        }
+        function drawHumanHeatMap() {
+            $("#heatCompareTitle").html("Example Heatmap of Human Tweets");
+            drawHeatmapChart(humanHeatData, ".innerHeatMap2");
+            heatMapDataReload = humanHeatData;
         }
 
-        function drawHeatmapChart(data) {
-
-            //using http://bl.ocks.org/tjdecke/5558084
-
-            d3.select(".innerHeatMap").selectAll("svg")
-                .each(function (d, i) {
-                    this.remove();
-
-                });
-
-            var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-                width = $(window).innerWidth() / 1.2 - margin.left - margin.right,
-                height = $(window).innerHeight() / 1.2 - margin.top - margin.bottom,
-                gridSize = Math.floor(width / 24),
-                legendElementWidth = gridSize / 2,
-                buckets = 9,
-                colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
-                days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-                times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
-
-
-            var svg = d3.select(".innerHeatMap").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            var dayLabels = svg.selectAll(".dayLabel")
-                .data(days)
-                .enter().append("text")
-                .text(function (d) { return d; })
-                .attr("x", 0)
-                .attr("y", function (d, i) { return i * gridSize; })
-                .style("text-anchor", "end")
-                .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-                .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
-
-            var timeLabels = svg.selectAll(".timeLabel")
-                .data(times)
-                .enter().append("text")
-                .text(function (d) { return d; })
-                .attr("x", function (d, i) { return i * gridSize; })
-                .attr("y", 0)
-                .style("text-anchor", "middle")
-                .attr("transform", "translate(" + gridSize / 2 + ", -6)")
-                .attr("class", function (d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
-
-            var heatmapChart = function (data) {
-
-                var colorScale = d3.scale.quantile()
-                    .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
-                    .range(colors);
-
-                var cards = svg.selectAll(".hour")
-                    .data(data, function (d) { return d.day + ':' + d.hour; });
-
-                cards.append("title");
-
-                cards.enter().append("rect")
-                    .attr("x", function (d) { return (d.hour - 1) * gridSize; })
-                    .attr("y", function (d) { return (d.day - 1) * gridSize; })
-                    .attr("rx", 4)
-                    .attr("ry", 4)
-                    .attr("class", "hour bordered")
-                    .attr("width", gridSize)
-                    .attr("height", gridSize)
-                    .style("fill", colors[0]);
-
-                cards.transition().duration(1000)
-                    .style("fill", function (d) { return colorScale(d.value); });
-
-                cards.select("title").text(function (d) { return d.value; });
-
-                cards.exit().remove();
-
-                var legend = svg.selectAll(".legend")
-                    .data([0].concat(colorScale.quantiles()), function (d) { return d; });
-
-                legend.enter().append("g")
-                    .attr("class", "legend");
-
-                legend.append("rect")
-                    .attr("x", function (d, i) { return legendElementWidth * i; })
-                    .attr("y", gridSize * 7.3)
-                    .attr("width", legendElementWidth)
-                    .attr("height", gridSize / 2)
-                    .style("fill", function (d, i) { return colors[i]; });
-
-                legend.append("text")
-                    .attr("class", "mono")
-                    .text("Low to High")
-                    .attr("x", legendElementWidth)
-                    .attr("y", gridSize * 8.3);
-
-
-                legend.exit().remove();
-
-            };
-
-            heatmapChart(data);
-            d3.select(".heatMap").style("display", "block");
+        //PieChart
+        function drawBotPieChart() {
+            $("#pieCompareTitle").html("Example Pie Chart of Bot Retweet times");
+            drawPieChart(botPieData, ".innerPieChart2");
+            pieChartDataReload = botPieData;
+        }
+        function drawHumanPieChart() {
+            $("#pieCompareTitle").html("Example Pie Chart of Human Retweet times");
+            drawPieChart(humanPieData, ".innerPieChart2");
+            pieChartDataReload = humanPieData;
         }
 
-        function drawSentimentChart(data) {
-
-            d3.select(".sentimentChart").selectAll("svg")
-                .each(function (d, i) {
-                    this.remove();
-
-                });
-
-            var margin = { top: 20, right: 30, bottom: 40, left: 30 },
-                width = $(window).innerWidth() / 1.5 - margin.left - margin.right,
-                height = $(window).innerHeight() / 1.5 - margin.top - margin.bottom;
-
-            var x = d3.scale.linear()
-                .range([0, width]);
-
-            var y = d3.scale.ordinal()
-                .rangeRoundBands([0, height], 0.1);
-
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom");
-
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left")
-                .tickSize(0)
-                .tickPadding(6);
-
-            var svg = d3.select(".sentimentChart").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            x.domain(d3.extent(data, function (d) { return d.value; })).nice();
-            y.domain(data.map(function (d) { return d.name; }));
-
-            svg.selectAll(".bar")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", function (d) { return "bar bar--" + (d.value < 0 ? "negative" : "positive"); })
-                .attr("x", function (d) { return x(Math.min(0, d.value)); })
-                .attr("y", function (d) { return y(d.name); })
-                .attr("width", function (d) { return Math.abs(x(d.value) - x(0)); })
-                .attr("height", y.rangeBand());
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .attr("transform", "translate(" + x(0) + ",0)")
-                .call(yAxis);
-
-            svg.select(".y").selectAll("text")
-                .each(function (d, i) {
-                    this.remove();
-
-                });
-
-            d3.select(".sentimentChart").style("display", "block");
-        };
-
-        function drawPieChart(dataset) {
-
-            d3.select(".pieChart").selectAll("svg")
-                .each(function (d, i) {
-                    this.remove();
-
-                });
-            var width = $(window).innerWidth() / 1.5;
-            var height = $(window).innerHeight() / 1.5;
-            var radius = Math.min(width, height) / 2;
-            var donutWidth = 75;
-            var color = d3.scale.category10();
-            var legendRectSize = 18;
-            var legendSpacing = 4;
-
-            var svg = d3.select('.pieChart')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height)
-                .append('g')
-                .attr('transform', 'translate(' + (width / 2) +
-                ',' + (height / 2) + ')');
-
-            var arc = d3.svg.arc()
-                .innerRadius(radius - donutWidth)
-                .outerRadius(radius);
-
-            var pie = d3.layout.pie()
-                .value(function (d) { return d.count; })
-                .sort(null);
-
-            var path = svg.selectAll('path')
-                .data(pie(dataset))
-                .enter()
-                .append('path')
-                .attr('d', arc)
-                .attr('fill', function (d, i) {
-                    return color(d.data.label);
-                });
-
-            var legend = svg.selectAll('.legend')
-                .data(color.domain())
-                .enter()
-                .append('g')
-                .attr('class', 'legend')
-                .attr('transform', function (d, i) {
-                    var height = legendRectSize + legendSpacing;
-                    var offset = height * color.domain().length / 2;
-                    var horz = -2 * legendRectSize;
-                    var vert = i * height - offset;
-                    return 'translate(' + horz + ',' + vert + ')';
-                });
-
-            legend.append('rect')
-                .attr('width', legendRectSize)
-                .attr('height', legendRectSize)
-                .style('fill', color)
-                .style('stroke', color);
-            legend.append('text')
-                .attr('x', legendRectSize + legendSpacing)
-                .attr('y', legendRectSize - legendSpacing)
-                .text(function (d) { return d; });
-
-            d3.select(".pieChart").style("display", "block");
-
+        //Bar Chart
+        function drawBotBarChart() {
+            $("#barCompareTitle").html("Example Bar Chart of Human Tweet Frequency");
+            drawBarChart(botBarData, ".innerBarChart2");
+            pieChartDataReload = botBarData;
+        }
+        function drawHumanBarChart() {
+            $("#barCompareTitle").html("Example Bar Chart of Human Tweet Frequency");
+            drawBarChart(humanBarData, ".innerBarChart2");
+            barChartDataReload = humanBarData;
         }
 
-        function drawBarChart(data) {
+       
 
-            d3.select(".barChart").selectAll("svg")
-                .each(function (d, i) {
-                    this.remove();
+        //Sample data to compare against
 
-                });
-            console.log(data);
+        var humanHeatData = [
+            { day: 1, hour: 1, value: 2 },
+            { day: 1, hour: 2, value: 2 },
+            { day: 1, hour: 3, value: 0 },
+            { day: 1, hour: 4, value: 0 },
+            { day: 1, hour: 5, value: 0 },
+            { day: 1, hour: 6, value: 0 },
+            { day: 1, hour: 7, value: 0 },
+            { day: 1, hour: 8, value: 0 },
+            { day: 1, hour: 9, value: 1 },
+            { day: 1, hour: 10, value: 2 },
+            { day: 1, hour: 11, value: 5 },
+            { day: 1, hour: 12, value: 2 },
+            { day: 1, hour: 13, value: 3 },
+            { day: 1, hour: 14, value: 6 },
+            { day: 1, hour: 15, value: 3 },
+            { day: 1, hour: 16, value: 4 },
+            { day: 1, hour: 17, value: 3 },
+            { day: 1, hour: 18, value: 1 },
+            { day: 1, hour: 19, value: 1 },
+            { day: 1, hour: 20, value: 4 },
+            { day: 1, hour: 21, value: 2 },
+            { day: 1, hour: 22, value: 3 },
+            { day: 1, hour: 23, value: 3 },
+            { day: 1, hour: 24, value: 5 },
+            { day: 2, hour: 1, value: 2 },
+            { day: 2, hour: 2, value: 4 },
+            { day: 2, hour: 3, value: 2 },
+            { day: 2, hour: 4, value: 0 },
+            { day: 2, hour: 5, value: 0 },
+            { day: 2, hour: 6, value: 0 },
+            { day: 2, hour: 7, value: 1 },
+            { day: 2, hour: 8, value: 0 },
+            { day: 2, hour: 9, value: 0 },
+            { day: 2, hour: 10, value: 9 },
+            { day: 2, hour: 11, value: 7 },
+            { day: 2, hour: 12, value: 4 },
+            { day: 2, hour: 13, value: 7 },
+            { day: 2, hour: 14, value: 8 },
+            { day: 2, hour: 15, value: 7 },
+            { day: 2, hour: 16, value: 3 },
+            { day: 2, hour: 17, value: 2 },
+            { day: 2, hour: 18, value: 5 },
+            { day: 2, hour: 19, value: 0 },
+            { day: 2, hour: 20, value: 0 },
+            { day: 2, hour: 21, value: 3 },
+            { day: 2, hour: 22, value: 3 },
+            { day: 2, hour: 23, value: 10 },
+            { day: 2, hour: 24, value: 4 },
+            { day: 3, hour: 1, value: 2 },
+            { day: 3, hour: 2, value: 0 },
+            { day: 3, hour: 3, value: 1 },
+            { day: 3, hour: 4, value: 0 },
+            { day: 3, hour: 5, value: 0 },
+            { day: 3, hour: 6, value: 0 },
+            { day: 3, hour: 7, value: 0 },
+            { day: 3, hour: 8, value: 0 },
+            { day: 3, hour: 9, value: 7 },
+            { day: 3, hour: 10, value: 4 },
+            { day: 3, hour: 11, value: 4 },
+            { day: 3, hour: 12, value: 5 },
+            { day: 3, hour: 13, value: 6 },
+            { day: 3, hour: 14, value: 12 },
+            { day: 3, hour: 15, value: 6 },
+            { day: 3, hour: 16, value: 2 },
+            { day: 3, hour: 17, value: 4 },
+            { day: 3, hour: 18, value: 2 },
+            { day: 3, hour: 19, value: 2 },
+            { day: 3, hour: 20, value: 5 },
+            { day: 3, hour: 21, value: 2 },
+            { day: 3, hour: 22, value: 1 },
+            { day: 3, hour: 23, value: 2 },
+            { day: 3, hour: 24, value: 8 },
+            { day: 4, hour: 1, value: 12 },
+            { day: 4, hour: 2, value: 10 },
+            { day: 4, hour: 3, value: 1 },
+            { day: 4, hour: 4, value: 3 },
+            { day: 4, hour: 5, value: 1 },
+            { day: 4, hour: 6, value: 0 },
+            { day: 4, hour: 7, value: 0 },
+            { day: 4, hour: 8, value: 3 },
+            { day: 4, hour: 9, value: 3 },
+            { day: 4, hour: 10, value: 3 },
+            { day: 4, hour: 11, value: 6 },
+            { day: 4, hour: 12, value: 3 },
+            { day: 4, hour: 13, value: 2 },
+            { day: 4, hour: 14, value: 2 },
+            { day: 4, hour: 15, value: 1 },
+            { day: 4, hour: 16, value: 5 },
+            { day: 4, hour: 17, value: 14 },
+            { day: 4, hour: 18, value: 1 },
+            { day: 4, hour: 19, value: 0 },
+            { day: 4, hour: 20, value: 0 },
+            { day: 4, hour: 21, value: 1 },
+            { day: 4, hour: 22, value: 2 },
+            { day: 4, hour: 23, value: 5 },
+            { day: 4, hour: 24, value: 3 },
+            { day: 5, hour: 1, value: 6 },
+            { day: 5, hour: 2, value: 7 },
+            { day: 5, hour: 3, value: 6 },
+            { day: 5, hour: 4, value: 1 },
+            { day: 5, hour: 5, value: 1 },
+            { day: 5, hour: 6, value: 0 },
+            { day: 5, hour: 7, value: 0 },
+            { day: 5, hour: 8, value: 2 },
+            { day: 5, hour: 9, value: 7 },
+            { day: 5, hour: 10, value: 9 },
+            { day: 5, hour: 11, value: 6 },
+            { day: 5, hour: 12, value: 2 },
+            { day: 5, hour: 13, value: 4 },
+            { day: 5, hour: 14, value: 2 },
+            { day: 5, hour: 15, value: 2 },
+            { day: 5, hour: 16, value: 0 },
+            { day: 5, hour: 17, value: 1 },
+            { day: 5, hour: 18, value: 1 },
+            { day: 5, hour: 19, value: 2 },
+            { day: 5, hour: 20, value: 4 },
+            { day: 5, hour: 21, value: 2 },
+            { day: 5, hour: 22, value: 3 },
+            { day: 5, hour: 23, value: 4 },
+            { day: 5, hour: 24, value: 3 },
+            { day: 6, hour: 1, value: 10 },
+            { day: 6, hour: 2, value: 6 },
+            { day: 6, hour: 3, value: 0 },
+            { day: 6, hour: 4, value: 1 },
+            { day: 6, hour: 5, value: 1 },
+            { day: 6, hour: 6, value: 0 },
+            { day: 6, hour: 7, value: 0 },
+            { day: 6, hour: 8, value: 6 },
+            { day: 6, hour: 9, value: 5 },
+            { day: 6, hour: 10, value: 9 },
+            { day: 6, hour: 11, value: 10 },
+            { day: 6, hour: 12, value: 8 },
+            { day: 6, hour: 13, value: 4 },
+            { day: 6, hour: 14, value: 7 },
+            { day: 6, hour: 15, value: 5 },
+            { day: 6, hour: 16, value: 4 },
+            { day: 6, hour: 17, value: 8 },
+            { day: 6, hour: 18, value: 8 },
+            { day: 6, hour: 19, value: 8 },
+            { day: 6, hour: 20, value: 10 },
+            { day: 6, hour: 21, value: 4 },
+            { day: 6, hour: 22, value: 1 },
+            { day: 6, hour: 23, value: 2 },
+            { day: 6, hour: 24, value: 1 },
+            { day: 7, hour: 1, value: 0 },
+            { day: 7, hour: 2, value: 6 },
+            { day: 7, hour: 3, value: 0 },
+            { day: 7, hour: 4, value: 1 },
+            { day: 7, hour: 5, value: 1 },
+            { day: 7, hour: 6, value: 0 },
+            { day: 7, hour: 7, value: 1 },
+            { day: 7, hour: 8, value: 1 },
+            { day: 7, hour: 9, value: 8 },
+            { day: 7, hour: 10, value: 9 },
+            { day: 7, hour: 11, value: 2 },
+            { day: 7, hour: 12, value: 7 },
+            { day: 7, hour: 13, value: 4 },
+            { day: 7, hour: 14, value: 3 },
+            { day: 7, hour: 15, value: 7 },
+            { day: 7, hour: 16, value: 2 },
+            { day: 7, hour: 17, value: 2 },
+            { day: 7, hour: 18, value: 2 },
+            { day: 7, hour: 19, value: 5 },
+            { day: 7, hour: 20, value: 4 },
+            { day: 7, hour: 21, value: 5 },
+            { day: 7, hour: 22, value: 0 },
+            { day: 7, hour: 23, value: 1 },
+            { day: 7, hour: 24, value: 4 }];
+        var botHeatData = [
+            { day: 1, hour: 1, value: 0 },
+            { day: 1, hour: 2, value: 0 },
+            { day: 1, hour: 3, value: 6 },
+            { day: 1, hour: 4, value: 0 },
+            { day: 1, hour: 5, value: 0 },
+            { day: 1, hour: 6, value: 11 },
+            { day: 1, hour: 7, value: 0 },
+            { day: 1, hour: 8, value: 0 },
+            { day: 1, hour: 9, value: 14 },
+            { day: 1, hour: 10, value: 0 },
+            { day: 1, hour: 11, value: 0 },
+            { day: 1, hour: 12, value: 9 },
+            { day: 1, hour: 13, value: 0 },
+            { day: 1, hour: 14, value: 3 },
+            { day: 1, hour: 15, value: 14 },
+            { day: 1, hour: 16, value: 0 },
+            { day: 1, hour: 17, value: 0 },
+            { day: 1, hour: 18, value: 9 },
+            { day: 1, hour: 19, value: 0 },
+            { day: 1, hour: 20, value: 0 },
+            { day: 1, hour: 21, value: 9 },
+            { day: 1, hour: 22, value: 0 },
+            { day: 1, hour: 23, value: 1 },
+            { day: 1, hour: 24, value: 12 },
+            { day: 2, hour: 1, value: 0 },
+            { day: 2, hour: 2, value: 2 },
+            { day: 2, hour: 3, value: 15 },
+            { day: 2, hour: 4, value: 0 },
+            { day: 2, hour: 5, value: 1 },
+            { day: 2, hour: 6, value: 16 },
+            { day: 2, hour: 7, value: 0 },
+            { day: 2, hour: 8, value: 0 },
+            { day: 2, hour: 9, value: 13 },
+            { day: 2, hour: 10, value: 0 },
+            { day: 2, hour: 11, value: 2 },
+            { day: 2, hour: 12, value: 15 },
+            { day: 2, hour: 13, value: 0 },
+            { day: 2, hour: 14, value: 1 },
+            { day: 2, hour: 15, value: 8 },
+            { day: 2, hour: 16, value: 0 },
+            { day: 2, hour: 17, value: 2 },
+            { day: 2, hour: 18, value: 8 },
+            { day: 2, hour: 19, value: 0 },
+            { day: 2, hour: 20, value: 3 },
+            { day: 2, hour: 21, value: 4 },
+            { day: 2, hour: 22, value: 0 },
+            { day: 2, hour: 23, value: 3 },
+            { day: 2, hour: 24, value: 7 },
+            { day: 3, hour: 1, value: 0 },
+            { day: 3, hour: 2, value: 0 },
+            { day: 3, hour: 3, value: 13 },
+            { day: 3, hour: 4, value: 0 },
+            { day: 3, hour: 5, value: 2 },
+            { day: 3, hour: 6, value: 10 },
+            { day: 3, hour: 7, value: 0 },
+            { day: 3, hour: 8, value: 3 },
+            { day: 3, hour: 9, value: 12 },
+            { day: 3, hour: 10, value: 0 },
+            { day: 3, hour: 11, value: 2 },
+            { day: 3, hour: 12, value: 6 },
+            { day: 3, hour: 13, value: 0 },
+            { day: 3, hour: 14, value: 3 },
+            { day: 3, hour: 15, value: 6 },
+            { day: 3, hour: 16, value: 0 },
+            { day: 3, hour: 17, value: 3 },
+            { day: 3, hour: 18, value: 3 },
+            { day: 3, hour: 19, value: 0 },
+            { day: 3, hour: 20, value: 1 },
+            { day: 3, hour: 21, value: 8 },
+            { day: 3, hour: 22, value: 0 },
+            { day: 3, hour: 23, value: 1 },
+            { day: 3, hour: 24, value: 14 },
+            { day: 4, hour: 1, value: 0 },
+            { day: 4, hour: 2, value: 2 },
+            { day: 4, hour: 3, value: 10 },
+            { day: 4, hour: 4, value: 0 },
+            { day: 4, hour: 5, value: 1 },
+            { day: 4, hour: 6, value: 10 },
+            { day: 4, hour: 7, value: 0 },
+            { day: 4, hour: 8, value: 2 },
+            { day: 4, hour: 9, value: 12 },
+            { day: 4, hour: 10, value: 0 },
+            { day: 4, hour: 11, value: 1 },
+            { day: 4, hour: 12, value: 6 },
+            { day: 4, hour: 13, value: 0 },
+            { day: 4, hour: 14, value: 2 },
+            { day: 4, hour: 15, value: 9 },
+            { day: 4, hour: 16, value: 0 },
+            { day: 4, hour: 17, value: 4 },
+            { day: 4, hour: 18, value: 3 },
+            { day: 4, hour: 19, value: 0 },
+            { day: 4, hour: 20, value: 1 },
+            { day: 4, hour: 21, value: 4 },
+            { day: 4, hour: 22, value: 0 },
+            { day: 4, hour: 23, value: 2 },
+            { day: 4, hour: 24, value: 6 },
+            { day: 5, hour: 1, value: 0 },
+            { day: 5, hour: 2, value: 3 },
+            { day: 5, hour: 3, value: 8 },
+            { day: 5, hour: 4, value: 0 },
+            { day: 5, hour: 5, value: 1 },
+            { day: 5, hour: 6, value: 7 },
+            { day: 5, hour: 7, value: 0 },
+            { day: 5, hour: 8, value: 2 },
+            { day: 5, hour: 9, value: 6 },
+            { day: 5, hour: 10, value: 0 },
+            { day: 5, hour: 11, value: 2 },
+            { day: 5, hour: 12, value: 13 },
+            { day: 5, hour: 13, value: 0 },
+            { day: 5, hour: 14, value: 2 },
+            { day: 5, hour: 15, value: 5 },
+            { day: 5, hour: 16, value: 0 },
+            { day: 5, hour: 17, value: 1 },
+            { day: 5, hour: 18, value: 9 },
+            { day: 5, hour: 19, value: 0 },
+            { day: 5, hour: 20, value: 1 },
+            { day: 5, hour: 21, value: 8 },
+            { day: 5, hour: 22, value: 0 },
+            { day: 5, hour: 23, value: 3 },
+            { day: 5, hour: 24, value: 8 },
+            { day: 6, hour: 1, value: 0 },
+            { day: 6, hour: 2, value: 2 },
+            { day: 6, hour: 3, value: 10 },
+            { day: 6, hour: 4, value: 0 },
+            { day: 6, hour: 5, value: 1 },
+            { day: 6, hour: 6, value: 11 },
+            { day: 6, hour: 7, value: 1 },
+            { day: 6, hour: 8, value: 3 },
+            { day: 6, hour: 9, value: 10 },
+            { day: 6, hour: 10, value: 0 },
+            { day: 6, hour: 11, value: 0 },
+            { day: 6, hour: 12, value: 7 },
+            { day: 6, hour: 13, value: 0 },
+            { day: 6, hour: 14, value: 3 },
+            { day: 6, hour: 15, value: 15 },
+            { day: 6, hour: 16, value: 0 },
+            { day: 6, hour: 17, value: 1 },
+            { day: 6, hour: 18, value: 12 },
+            { day: 6, hour: 19, value: 0 },
+            { day: 6, hour: 20, value: 1 },
+            { day: 6, hour: 21, value: 12 },
+            { day: 6, hour: 22, value: 0 },
+            { day: 6, hour: 23, value: 3 },
+            { day: 6, hour: 24, value: 11 },
+            { day: 7, hour: 1, value: 0 },
+            { day: 7, hour: 2, value: 1 },
+            { day: 7, hour: 3, value: 4 },
+            { day: 7, hour: 4, value: 0 },
+            { day: 7, hour: 5, value: 0 },
+            { day: 7, hour: 6, value: 7 },
+            { day: 7, hour: 7, value: 0 },
+            { day: 7, hour: 8, value: 1 },
+            { day: 7, hour: 9, value: 12 },
+            { day: 7, hour: 10, value: 0 },
+            { day: 7, hour: 11, value: 1 },
+            { day: 7, hour: 12, value: 6 },
+            { day: 7, hour: 13, value: 0 },
+            { day: 7, hour: 14, value: 1 },
+            { day: 7, hour: 15, value: 8 },
+            { day: 7, hour: 16, value: 0 },
+            { day: 7, hour: 17, value: 3 },
+            { day: 7, hour: 18, value: 3 },
+            { day: 7, hour: 19, value: 0 },
+            { day: 7, hour: 20, value: 0 },
+            { day: 7, hour: 21, value: 8 },
+            { day: 7, hour: 22, value: 0 },
+            { day: 7, hour: 23, value: 3 },
+            { day: 7, hour: 24, value: 10 }
+        ];
 
-            var margin = { top: 40, right: 20, bottom: 30, left: 40 },
-                width = $(window).innerWidth() /1.5  - margin.left - margin.right,
-                height = $(window).innerHeight() /1.5 - margin.top - margin.bottom;
+        var humanPieData = [
+            { label: "> 3 Days", count: 13 },{ label: "1 - 5 Days", count: 91 }, { label: "< a Day", count: 0 },{ label: "< 1 Hour", count: 44 }, { label: "< 30 seconds", count: 2 } 
+        ];
+        var botPieData = [
+            { label: "> 3 Days", count: 2 }, { label: "1 - 5 Days", count: 4 }, { label: "< a Day", count: 1 }, { label: "< 1 Hour", count: 2 }, { label: "< 30 seconds", count: 60 }
+        ];
 
-
-            var x = d3.scale.ordinal()
-                .rangeRoundBands([0, width], .1);
-
-            var y = d3.scale.linear()
-                .range([height, 0]);
-
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom");
-
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left");
-
-            var svg = d3.select(".barChart").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-            // The following code was contained in the callback function.
-            x.domain(data.map(function (d) { return d.letter; }));
-            y.domain([0, d3.max(data, function (d) { return d.frequency; })]);
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Frequency");
-
-            svg.selectAll(".bar")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("x", function (d) { return x(d.letter); })
-                .attr("width", x.rangeBand())
-                .attr("y", function (d) { return y(d.frequency); })
-                .attr("height", function (d) { return height - y(d.frequency); })
-
-            d3.select(".barChart").style("display", "block");
-        }
-
+        var humanBarData = [
+        { letter: "Jan", frequency: 52 },
+        { letter: "Feb", frequency: 58 },
+        { letter: "Mar", frequency: 101 },
+        { letter: "Apr", frequency: 25 },
+        { letter: "May", frequency: 30 },
+        { letter: "June", frequency: 23 },
+        { letter: "July", frequency: 31 },
+        { letter: "Aug", frequency: 26 },
+        { letter: "Sept", frequency: 36 },
+        { letter: "Oct", frequency: 40 },
+        { letter: "Nov", frequency: 50 },
+        { letter: "Dec", frequency: 84 }
+        ];
+        var botBarData = [
+            { letter: "Jan", frequency: 4 },
+            { letter: "Feb", frequency: 5 },
+            { letter: "Mar", frequency: 1 },
+            { letter: "Apr", frequency: 252 },
+            { letter: "May", frequency: 301 },
+            { letter: "June", frequency: 9 },
+            { letter: "July", frequency: 7 },
+            { letter: "Aug", frequency: 24},
+            { letter: "Sept", frequency: 3 },
+            { letter: "Oct", frequency: 17 },
+            { letter: "Nov", frequency: 11 },
+            { letter: "Dec", frequency: 2 }
+        ];
     </script>
 
 </asp:Content>

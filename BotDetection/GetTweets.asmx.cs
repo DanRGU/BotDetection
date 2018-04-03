@@ -97,7 +97,7 @@ namespace BotDetection
                     if (parsedJson[i]["retweeted_status"].ToString().GetType() == typeof(string) && parsedJson[i]["retweeted_status"].ToString() != "")
                     {
                         retweet = JObject.Parse(parsedJson[i]["retweeted_status"].ToString());
-                       // tweetArr[i].RetweetTime = DateTime.ParseExact(retweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        tweetArr[i].RetweetTime = DateTime.ParseExact(retweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                     }
 
                     //Loop through for all the hashtags and add them to the hashtag array
