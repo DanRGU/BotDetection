@@ -15,7 +15,7 @@
     <div class="heatMap">
         <h3>Heatmap of Users Tweets</h3>
         <div class="innerHeatMap"></div>
-            <h3 id="heatCompareTitle">Example Heatmap of Human Tweets</h3>
+            <h3 id="heatCompareTitle">Example Heatmap of Bot Tweets</h3>
             <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <div class="compareButtons">
@@ -35,7 +35,8 @@
             <h3>Time taken to Retweet</h3>
         </div>
             <div class="innerPieChart2 col-md-6">
-                <h3 id="pieCompareTitle">Example Pie Chart of Human Retweet times</h3>
+                <h3 id="pieCompareTitle">Example Pie Chart of Bot Retweet times</h3>
+
                 <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <div class="compareButtons">
@@ -56,7 +57,7 @@
             <h3>Frequency of User Tweets</h3>
         </div>
             <div class="innerBarChart2 col-md-6">
-                <h3 id="barCompareTitle">Example Bar Chart of Human Tweet Frequency</h3>
+                <h3 id="barCompareTitle">Example Bar Chart of Bot Tweet Frequency</h3>
                 <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <div class="compareButtons">
@@ -71,8 +72,21 @@
 
     
     <!--Sentiment Chart Stuff-->
-    <div class="sentimentChart">
-        <h3>Sentiment of Users Tweets</h3>
+    <div class="sentimentChart row">
+        <div class="innerSentimentChart col-md-6"> 
+            <h3>Sentiment of User Tweets</h3>
+        </div>
+            <div class="innerSentimentChart2 col-md-6">
+                <h3 id="sentimentCompareTitle">Example Sentiment Chart of Bot Tweets</h3>
+                <asp:UpdatePanel runat="server">
+                <ContentTemplate>
+                    <div class="compareButtons">
+                        <button id="humanSentimentChart" type="button" class="btn btn-info" onclick="drawHumanSentimentChart();">Human</button>
+                        <button id="botSentimentChart" type="button" class="btn btn-info" onclick="drawBotSentimentChart();">Bot</button>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+            </div>
     </div>
     <!--/Sentiment Chart Stuff-->
 
@@ -82,19 +96,16 @@
         var heatMapDataReload = botHeatData;
         var pieChartDataReload = botPieData;
         var barChartDataReload = botBarData;
-        var lineChartDataReload = botHeatData;
+      //  var SentimentChartDataReload = botSentimentData;
 
 
         //Setting the div sizes based on window size
         $(function () {
             $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
             $(window).resize(function () {
                 $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
             });
-        });
-
-        $(function () {
-            $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ witdh: $(window).innerWidth() });
             $(window).resize(function () {
                 $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
             });
@@ -138,7 +149,7 @@
             for (var i = 0; i < input.length; i++) {
 
                 if (input[i].rtTime.day != 999999) {
-                    //More than 3 days
+                    //More than 5 days
                     if (input[i].rtTime.day > 5) {
                         values[4]++;
                     }
@@ -147,22 +158,22 @@
                         values[3]++;
                     }
                     //Less than a day but > 1 hour
-                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour < 0) {
+                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour > 0) {
                         values[2]++;
                     }
-                    //less than an hour but more than 30 seconds
-                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute > 0 || input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute < 0 && input[i].rtTime.seconds > 30) {
+                    //less 1 hour mins but more than 5 seconds
+                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute > 0 || input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute == 0 && input[i].rtTime.seconds > 30) {
                         values[1]++;
                     }
-                    //less than 30 seconds
-                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute == 0 && input[i].rtTime.seconds < 31) {
+                    //less than 5 seconds
+                    if (input[i].rtTime.day == 0 && input[i].rtTime.hour == 0 && input[i].rtTime.minute == 0 && input[i].rtTime.seconds < 5) {
                         values[0]++;
                     }
                 }
             }
 
             var output = [];
-            output.push({ label: "> 3 Days", count: values[4] }, { label: "1 - 5 Days", count: values[3] }, { label: "< a Day", count: values[2] }, { label: "< 1 Hour", count: values[1] }, { label: "< 30 seconds", count: values[0] }, );
+            output.push({ label: "> 5 Days", count: values[4] }, { label: "1 - 5 Days", count: values[3] }, { label: "1 - 24 hours", count: values[2] }, { label: "5 seconds - 1 hour", count: values[1] }, { label: "< 5 seconds", count: values[0] }, );
             return output;
         }
 
@@ -212,8 +223,8 @@
             var dataParam = $("#userInput").val();
 
             $.ajax({
-                url: "/GetTweets.asmx/GetTwitterDataJSON",
-                //url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
+               // url: "/GetTweets.asmx/GetTwitterDataJSON",
+                url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -241,7 +252,7 @@
                         likes.push(tweet["likes"]);
                         sentimentScore.push(tweet["sentiment"]);
 
-                        if (i < 250) {
+                        if (i < 200) {
                             sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
                             tweetLengths.push(content[i].length);
                         }
@@ -264,20 +275,26 @@
                     heatData = getHeatData(dates);
                     pieChartData = getPieData(retweetTimes);
                     barChartData = getBarData(dates);
-                    console.log(pieChartData);
 
 
-                    //Drawing the charts
-                    drawHeatmapChart(heatData, ".innerHeatMap");
-                    drawHeatmapChart(botHeatData, ".innerHeatMap2");
-                    
-                    drawPieChart(pieChartData, ".innerPieChart");
-                    drawPieChart(botPieData, ".innerPieChart2");
+                    if (document.readyState === "complete") {
+                        
+                        //Drawing the charts
+                        drawHeatmapChart(heatData, ".innerHeatMap");
+                        drawHeatmapChart(botHeatData, ".innerHeatMap2");
 
-                    drawBarChart(barChartData, ".innerBarChart");
-                    drawBarChart(botBarData, ".innerBarChart2");
+                        drawPieChart(pieChartData, ".innerPieChart");
+                        drawPieChart(botPieData, ".innerPieChart2");
 
-                    drawSentimentChart(sentimentData);
+                        drawBarChart(barChartData, ".innerBarChart");
+                        drawBarChart(botBarData, ".innerBarChart2");
+
+                        drawSentimentChart(sentimentData, ".innerSentimentChart");
+                        drawSentimentChart(humanSentimentData, ".innerSentimentChart2");
+
+                       
+
+                    }
                     
 
                     $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
@@ -329,7 +346,8 @@
                 drawBarChart(barChartData, ".innerBarChart");
                 drawBarChart(barChartDataReload, ".innerBarChart2");
 
-                drawSentimentChart(sentimentData);
+                drawSentimentChart(sentimentData, ".innerSentimentChart");
+                drawSentimentChart(sentimentData, ".innerSentimentChart2");
             });
         }
 
@@ -360,7 +378,7 @@
 
         //Bar Chart
         function drawBotBarChart() {
-            $("#barCompareTitle").html("Example Bar Chart of Human Tweet Frequency");
+            $("#barCompareTitle").html("Example Bar Chart of Bot Tweet Frequency");
             drawBarChart(botBarData, ".innerBarChart2");
             pieChartDataReload = botBarData;
         }
@@ -370,385 +388,21 @@
             barChartDataReload = humanBarData;
         }
 
+        //Bar Chart
+        function drawBotSentimentChart() {
+            $("#sentimentCompareTitle").html("Example Sentiment Chart of Bot Tweets");
+            drawSentimentChart(botSentimentData, ".innerSentimentChart2");
+            sentimentChartDataReload = sentimentBarData;
+        }
+        function drawHumanSentimentChart() {
+            $("#sentimentCompareTitle").html("Example Sentiment Chart of Human Tweets");
+            drawSentimentChart(humanSentimentData, ".innerSentimentChart2");
+            sentimentChartDataReload = humanSentimentData;
+        }
+
+
        
 
-        //Sample data to compare against
-
-        var humanHeatData = [
-            { day: 1, hour: 1, value: 2 },
-            { day: 1, hour: 2, value: 2 },
-            { day: 1, hour: 3, value: 0 },
-            { day: 1, hour: 4, value: 0 },
-            { day: 1, hour: 5, value: 0 },
-            { day: 1, hour: 6, value: 0 },
-            { day: 1, hour: 7, value: 0 },
-            { day: 1, hour: 8, value: 0 },
-            { day: 1, hour: 9, value: 1 },
-            { day: 1, hour: 10, value: 2 },
-            { day: 1, hour: 11, value: 5 },
-            { day: 1, hour: 12, value: 2 },
-            { day: 1, hour: 13, value: 3 },
-            { day: 1, hour: 14, value: 6 },
-            { day: 1, hour: 15, value: 3 },
-            { day: 1, hour: 16, value: 4 },
-            { day: 1, hour: 17, value: 3 },
-            { day: 1, hour: 18, value: 1 },
-            { day: 1, hour: 19, value: 1 },
-            { day: 1, hour: 20, value: 4 },
-            { day: 1, hour: 21, value: 2 },
-            { day: 1, hour: 22, value: 3 },
-            { day: 1, hour: 23, value: 3 },
-            { day: 1, hour: 24, value: 5 },
-            { day: 2, hour: 1, value: 2 },
-            { day: 2, hour: 2, value: 4 },
-            { day: 2, hour: 3, value: 2 },
-            { day: 2, hour: 4, value: 0 },
-            { day: 2, hour: 5, value: 0 },
-            { day: 2, hour: 6, value: 0 },
-            { day: 2, hour: 7, value: 1 },
-            { day: 2, hour: 8, value: 0 },
-            { day: 2, hour: 9, value: 0 },
-            { day: 2, hour: 10, value: 9 },
-            { day: 2, hour: 11, value: 7 },
-            { day: 2, hour: 12, value: 4 },
-            { day: 2, hour: 13, value: 7 },
-            { day: 2, hour: 14, value: 8 },
-            { day: 2, hour: 15, value: 7 },
-            { day: 2, hour: 16, value: 3 },
-            { day: 2, hour: 17, value: 2 },
-            { day: 2, hour: 18, value: 5 },
-            { day: 2, hour: 19, value: 0 },
-            { day: 2, hour: 20, value: 0 },
-            { day: 2, hour: 21, value: 3 },
-            { day: 2, hour: 22, value: 3 },
-            { day: 2, hour: 23, value: 10 },
-            { day: 2, hour: 24, value: 4 },
-            { day: 3, hour: 1, value: 2 },
-            { day: 3, hour: 2, value: 0 },
-            { day: 3, hour: 3, value: 1 },
-            { day: 3, hour: 4, value: 0 },
-            { day: 3, hour: 5, value: 0 },
-            { day: 3, hour: 6, value: 0 },
-            { day: 3, hour: 7, value: 0 },
-            { day: 3, hour: 8, value: 0 },
-            { day: 3, hour: 9, value: 7 },
-            { day: 3, hour: 10, value: 4 },
-            { day: 3, hour: 11, value: 4 },
-            { day: 3, hour: 12, value: 5 },
-            { day: 3, hour: 13, value: 6 },
-            { day: 3, hour: 14, value: 12 },
-            { day: 3, hour: 15, value: 6 },
-            { day: 3, hour: 16, value: 2 },
-            { day: 3, hour: 17, value: 4 },
-            { day: 3, hour: 18, value: 2 },
-            { day: 3, hour: 19, value: 2 },
-            { day: 3, hour: 20, value: 5 },
-            { day: 3, hour: 21, value: 2 },
-            { day: 3, hour: 22, value: 1 },
-            { day: 3, hour: 23, value: 2 },
-            { day: 3, hour: 24, value: 8 },
-            { day: 4, hour: 1, value: 12 },
-            { day: 4, hour: 2, value: 10 },
-            { day: 4, hour: 3, value: 1 },
-            { day: 4, hour: 4, value: 3 },
-            { day: 4, hour: 5, value: 1 },
-            { day: 4, hour: 6, value: 0 },
-            { day: 4, hour: 7, value: 0 },
-            { day: 4, hour: 8, value: 3 },
-            { day: 4, hour: 9, value: 3 },
-            { day: 4, hour: 10, value: 3 },
-            { day: 4, hour: 11, value: 6 },
-            { day: 4, hour: 12, value: 3 },
-            { day: 4, hour: 13, value: 2 },
-            { day: 4, hour: 14, value: 2 },
-            { day: 4, hour: 15, value: 1 },
-            { day: 4, hour: 16, value: 5 },
-            { day: 4, hour: 17, value: 14 },
-            { day: 4, hour: 18, value: 1 },
-            { day: 4, hour: 19, value: 0 },
-            { day: 4, hour: 20, value: 0 },
-            { day: 4, hour: 21, value: 1 },
-            { day: 4, hour: 22, value: 2 },
-            { day: 4, hour: 23, value: 5 },
-            { day: 4, hour: 24, value: 3 },
-            { day: 5, hour: 1, value: 6 },
-            { day: 5, hour: 2, value: 7 },
-            { day: 5, hour: 3, value: 6 },
-            { day: 5, hour: 4, value: 1 },
-            { day: 5, hour: 5, value: 1 },
-            { day: 5, hour: 6, value: 0 },
-            { day: 5, hour: 7, value: 0 },
-            { day: 5, hour: 8, value: 2 },
-            { day: 5, hour: 9, value: 7 },
-            { day: 5, hour: 10, value: 9 },
-            { day: 5, hour: 11, value: 6 },
-            { day: 5, hour: 12, value: 2 },
-            { day: 5, hour: 13, value: 4 },
-            { day: 5, hour: 14, value: 2 },
-            { day: 5, hour: 15, value: 2 },
-            { day: 5, hour: 16, value: 0 },
-            { day: 5, hour: 17, value: 1 },
-            { day: 5, hour: 18, value: 1 },
-            { day: 5, hour: 19, value: 2 },
-            { day: 5, hour: 20, value: 4 },
-            { day: 5, hour: 21, value: 2 },
-            { day: 5, hour: 22, value: 3 },
-            { day: 5, hour: 23, value: 4 },
-            { day: 5, hour: 24, value: 3 },
-            { day: 6, hour: 1, value: 10 },
-            { day: 6, hour: 2, value: 6 },
-            { day: 6, hour: 3, value: 0 },
-            { day: 6, hour: 4, value: 1 },
-            { day: 6, hour: 5, value: 1 },
-            { day: 6, hour: 6, value: 0 },
-            { day: 6, hour: 7, value: 0 },
-            { day: 6, hour: 8, value: 6 },
-            { day: 6, hour: 9, value: 5 },
-            { day: 6, hour: 10, value: 9 },
-            { day: 6, hour: 11, value: 10 },
-            { day: 6, hour: 12, value: 8 },
-            { day: 6, hour: 13, value: 4 },
-            { day: 6, hour: 14, value: 7 },
-            { day: 6, hour: 15, value: 5 },
-            { day: 6, hour: 16, value: 4 },
-            { day: 6, hour: 17, value: 8 },
-            { day: 6, hour: 18, value: 8 },
-            { day: 6, hour: 19, value: 8 },
-            { day: 6, hour: 20, value: 10 },
-            { day: 6, hour: 21, value: 4 },
-            { day: 6, hour: 22, value: 1 },
-            { day: 6, hour: 23, value: 2 },
-            { day: 6, hour: 24, value: 1 },
-            { day: 7, hour: 1, value: 0 },
-            { day: 7, hour: 2, value: 6 },
-            { day: 7, hour: 3, value: 0 },
-            { day: 7, hour: 4, value: 1 },
-            { day: 7, hour: 5, value: 1 },
-            { day: 7, hour: 6, value: 0 },
-            { day: 7, hour: 7, value: 1 },
-            { day: 7, hour: 8, value: 1 },
-            { day: 7, hour: 9, value: 8 },
-            { day: 7, hour: 10, value: 9 },
-            { day: 7, hour: 11, value: 2 },
-            { day: 7, hour: 12, value: 7 },
-            { day: 7, hour: 13, value: 4 },
-            { day: 7, hour: 14, value: 3 },
-            { day: 7, hour: 15, value: 7 },
-            { day: 7, hour: 16, value: 2 },
-            { day: 7, hour: 17, value: 2 },
-            { day: 7, hour: 18, value: 2 },
-            { day: 7, hour: 19, value: 5 },
-            { day: 7, hour: 20, value: 4 },
-            { day: 7, hour: 21, value: 5 },
-            { day: 7, hour: 22, value: 0 },
-            { day: 7, hour: 23, value: 1 },
-            { day: 7, hour: 24, value: 4 }];
-        var botHeatData = [
-            { day: 1, hour: 1, value: 0 },
-            { day: 1, hour: 2, value: 0 },
-            { day: 1, hour: 3, value: 6 },
-            { day: 1, hour: 4, value: 0 },
-            { day: 1, hour: 5, value: 0 },
-            { day: 1, hour: 6, value: 11 },
-            { day: 1, hour: 7, value: 0 },
-            { day: 1, hour: 8, value: 0 },
-            { day: 1, hour: 9, value: 14 },
-            { day: 1, hour: 10, value: 0 },
-            { day: 1, hour: 11, value: 0 },
-            { day: 1, hour: 12, value: 9 },
-            { day: 1, hour: 13, value: 0 },
-            { day: 1, hour: 14, value: 3 },
-            { day: 1, hour: 15, value: 14 },
-            { day: 1, hour: 16, value: 0 },
-            { day: 1, hour: 17, value: 0 },
-            { day: 1, hour: 18, value: 9 },
-            { day: 1, hour: 19, value: 0 },
-            { day: 1, hour: 20, value: 0 },
-            { day: 1, hour: 21, value: 9 },
-            { day: 1, hour: 22, value: 0 },
-            { day: 1, hour: 23, value: 1 },
-            { day: 1, hour: 24, value: 12 },
-            { day: 2, hour: 1, value: 0 },
-            { day: 2, hour: 2, value: 2 },
-            { day: 2, hour: 3, value: 15 },
-            { day: 2, hour: 4, value: 0 },
-            { day: 2, hour: 5, value: 1 },
-            { day: 2, hour: 6, value: 16 },
-            { day: 2, hour: 7, value: 0 },
-            { day: 2, hour: 8, value: 0 },
-            { day: 2, hour: 9, value: 13 },
-            { day: 2, hour: 10, value: 0 },
-            { day: 2, hour: 11, value: 2 },
-            { day: 2, hour: 12, value: 15 },
-            { day: 2, hour: 13, value: 0 },
-            { day: 2, hour: 14, value: 1 },
-            { day: 2, hour: 15, value: 8 },
-            { day: 2, hour: 16, value: 0 },
-            { day: 2, hour: 17, value: 2 },
-            { day: 2, hour: 18, value: 8 },
-            { day: 2, hour: 19, value: 0 },
-            { day: 2, hour: 20, value: 3 },
-            { day: 2, hour: 21, value: 4 },
-            { day: 2, hour: 22, value: 0 },
-            { day: 2, hour: 23, value: 3 },
-            { day: 2, hour: 24, value: 7 },
-            { day: 3, hour: 1, value: 0 },
-            { day: 3, hour: 2, value: 0 },
-            { day: 3, hour: 3, value: 13 },
-            { day: 3, hour: 4, value: 0 },
-            { day: 3, hour: 5, value: 2 },
-            { day: 3, hour: 6, value: 10 },
-            { day: 3, hour: 7, value: 0 },
-            { day: 3, hour: 8, value: 3 },
-            { day: 3, hour: 9, value: 12 },
-            { day: 3, hour: 10, value: 0 },
-            { day: 3, hour: 11, value: 2 },
-            { day: 3, hour: 12, value: 6 },
-            { day: 3, hour: 13, value: 0 },
-            { day: 3, hour: 14, value: 3 },
-            { day: 3, hour: 15, value: 6 },
-            { day: 3, hour: 16, value: 0 },
-            { day: 3, hour: 17, value: 3 },
-            { day: 3, hour: 18, value: 3 },
-            { day: 3, hour: 19, value: 0 },
-            { day: 3, hour: 20, value: 1 },
-            { day: 3, hour: 21, value: 8 },
-            { day: 3, hour: 22, value: 0 },
-            { day: 3, hour: 23, value: 1 },
-            { day: 3, hour: 24, value: 14 },
-            { day: 4, hour: 1, value: 0 },
-            { day: 4, hour: 2, value: 2 },
-            { day: 4, hour: 3, value: 10 },
-            { day: 4, hour: 4, value: 0 },
-            { day: 4, hour: 5, value: 1 },
-            { day: 4, hour: 6, value: 10 },
-            { day: 4, hour: 7, value: 0 },
-            { day: 4, hour: 8, value: 2 },
-            { day: 4, hour: 9, value: 12 },
-            { day: 4, hour: 10, value: 0 },
-            { day: 4, hour: 11, value: 1 },
-            { day: 4, hour: 12, value: 6 },
-            { day: 4, hour: 13, value: 0 },
-            { day: 4, hour: 14, value: 2 },
-            { day: 4, hour: 15, value: 9 },
-            { day: 4, hour: 16, value: 0 },
-            { day: 4, hour: 17, value: 4 },
-            { day: 4, hour: 18, value: 3 },
-            { day: 4, hour: 19, value: 0 },
-            { day: 4, hour: 20, value: 1 },
-            { day: 4, hour: 21, value: 4 },
-            { day: 4, hour: 22, value: 0 },
-            { day: 4, hour: 23, value: 2 },
-            { day: 4, hour: 24, value: 6 },
-            { day: 5, hour: 1, value: 0 },
-            { day: 5, hour: 2, value: 3 },
-            { day: 5, hour: 3, value: 8 },
-            { day: 5, hour: 4, value: 0 },
-            { day: 5, hour: 5, value: 1 },
-            { day: 5, hour: 6, value: 7 },
-            { day: 5, hour: 7, value: 0 },
-            { day: 5, hour: 8, value: 2 },
-            { day: 5, hour: 9, value: 6 },
-            { day: 5, hour: 10, value: 0 },
-            { day: 5, hour: 11, value: 2 },
-            { day: 5, hour: 12, value: 13 },
-            { day: 5, hour: 13, value: 0 },
-            { day: 5, hour: 14, value: 2 },
-            { day: 5, hour: 15, value: 5 },
-            { day: 5, hour: 16, value: 0 },
-            { day: 5, hour: 17, value: 1 },
-            { day: 5, hour: 18, value: 9 },
-            { day: 5, hour: 19, value: 0 },
-            { day: 5, hour: 20, value: 1 },
-            { day: 5, hour: 21, value: 8 },
-            { day: 5, hour: 22, value: 0 },
-            { day: 5, hour: 23, value: 3 },
-            { day: 5, hour: 24, value: 8 },
-            { day: 6, hour: 1, value: 0 },
-            { day: 6, hour: 2, value: 2 },
-            { day: 6, hour: 3, value: 10 },
-            { day: 6, hour: 4, value: 0 },
-            { day: 6, hour: 5, value: 1 },
-            { day: 6, hour: 6, value: 11 },
-            { day: 6, hour: 7, value: 1 },
-            { day: 6, hour: 8, value: 3 },
-            { day: 6, hour: 9, value: 10 },
-            { day: 6, hour: 10, value: 0 },
-            { day: 6, hour: 11, value: 0 },
-            { day: 6, hour: 12, value: 7 },
-            { day: 6, hour: 13, value: 0 },
-            { day: 6, hour: 14, value: 3 },
-            { day: 6, hour: 15, value: 15 },
-            { day: 6, hour: 16, value: 0 },
-            { day: 6, hour: 17, value: 1 },
-            { day: 6, hour: 18, value: 12 },
-            { day: 6, hour: 19, value: 0 },
-            { day: 6, hour: 20, value: 1 },
-            { day: 6, hour: 21, value: 12 },
-            { day: 6, hour: 22, value: 0 },
-            { day: 6, hour: 23, value: 3 },
-            { day: 6, hour: 24, value: 11 },
-            { day: 7, hour: 1, value: 0 },
-            { day: 7, hour: 2, value: 1 },
-            { day: 7, hour: 3, value: 4 },
-            { day: 7, hour: 4, value: 0 },
-            { day: 7, hour: 5, value: 0 },
-            { day: 7, hour: 6, value: 7 },
-            { day: 7, hour: 7, value: 0 },
-            { day: 7, hour: 8, value: 1 },
-            { day: 7, hour: 9, value: 12 },
-            { day: 7, hour: 10, value: 0 },
-            { day: 7, hour: 11, value: 1 },
-            { day: 7, hour: 12, value: 6 },
-            { day: 7, hour: 13, value: 0 },
-            { day: 7, hour: 14, value: 1 },
-            { day: 7, hour: 15, value: 8 },
-            { day: 7, hour: 16, value: 0 },
-            { day: 7, hour: 17, value: 3 },
-            { day: 7, hour: 18, value: 3 },
-            { day: 7, hour: 19, value: 0 },
-            { day: 7, hour: 20, value: 0 },
-            { day: 7, hour: 21, value: 8 },
-            { day: 7, hour: 22, value: 0 },
-            { day: 7, hour: 23, value: 3 },
-            { day: 7, hour: 24, value: 10 }
-        ];
-
-        var humanPieData = [
-            { label: "> 3 Days", count: 13 },{ label: "1 - 5 Days", count: 91 }, { label: "< a Day", count: 0 },{ label: "< 1 Hour", count: 44 }, { label: "< 30 seconds", count: 2 } 
-        ];
-        var botPieData = [
-            { label: "> 3 Days", count: 2 }, { label: "1 - 5 Days", count: 4 }, { label: "< a Day", count: 1 }, { label: "< 1 Hour", count: 2 }, { label: "< 30 seconds", count: 60 }
-        ];
-
-        var humanBarData = [
-        { letter: "Jan", frequency: 52 },
-        { letter: "Feb", frequency: 58 },
-        { letter: "Mar", frequency: 101 },
-        { letter: "Apr", frequency: 25 },
-        { letter: "May", frequency: 30 },
-        { letter: "June", frequency: 23 },
-        { letter: "July", frequency: 31 },
-        { letter: "Aug", frequency: 26 },
-        { letter: "Sept", frequency: 36 },
-        { letter: "Oct", frequency: 40 },
-        { letter: "Nov", frequency: 50 },
-        { letter: "Dec", frequency: 84 }
-        ];
-        var botBarData = [
-            { letter: "Jan", frequency: 4 },
-            { letter: "Feb", frequency: 5 },
-            { letter: "Mar", frequency: 1 },
-            { letter: "Apr", frequency: 252 },
-            { letter: "May", frequency: 301 },
-            { letter: "June", frequency: 9 },
-            { letter: "July", frequency: 7 },
-            { letter: "Aug", frequency: 24},
-            { letter: "Sept", frequency: 3 },
-            { letter: "Oct", frequency: 17 },
-            { letter: "Nov", frequency: 11 },
-            { letter: "Dec", frequency: 2 }
-        ];
     </script>
 
 </asp:Content>

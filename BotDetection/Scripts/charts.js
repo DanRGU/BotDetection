@@ -83,8 +83,8 @@ function drawHeatmapChart(data, className) {
         });
 
     var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-        width = $(window).innerWidth() / 1.75 - margin.left - margin.right,
-        height = $(window).innerHeight() / 2.2 - margin.top - margin.bottom,
+        width = $(".heatMap").outerWidth() / 1.8 - margin.left - margin.right,
+        height = $(".heatMap").outerHeight() / 2 - margin.top - margin.bottom,
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize / 2,
         buckets = 9,
@@ -175,16 +175,15 @@ function drawHeatmapChart(data, className) {
     d3.select(".heatMap").style("display", "block");
 }
 
-function drawSentimentChart(data) {
-
-    d3.select(".sentimentChart").selectAll("svg")
+function drawSentimentChart(data, className) {
+    d3.select(className).selectAll("svg")
         .each(function (d, i) {
             this.remove();
 
         });
 
     var margin = { top: 20, right: 30, bottom: 40, left: 30 },
-        width = $(window).innerWidth() / 1.5 - margin.left - margin.right,
+        width = $(window).innerWidth() / 3 - margin.left - margin.right,
         height = $(window).innerHeight() / 1.5 - margin.top - margin.bottom;
 
     var x = d3.scale.linear()
@@ -203,7 +202,7 @@ function drawSentimentChart(data) {
         .tickSize(0)
         .tickPadding(6);
 
-    var svg = d3.select(".sentimentChart").append("svg")
+    var svg = d3.select(className).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -238,7 +237,7 @@ function drawSentimentChart(data) {
         });
 
     d3.select(".sentimentChart").style("display", "block");
-};
+}
 
 function drawPieChart(dataset, className) {
 
@@ -248,10 +247,10 @@ function drawPieChart(dataset, className) {
 
         });
 
-    var width = $(window).innerWidth() / 2;
-    var height = $(window).innerHeight() / 2;
+    var width = $(".pieChart").outerWidth() / 3;
+    var height = $(".pieChart").outerWidth() / 3;
     var radius = Math.min(width, height) / 2;
-    var donutWidth = 75;
+    var donutWidth = radius/10;
     var color = d3.scale.category10();
     var legendRectSize = 18;
     var legendSpacing = 4;

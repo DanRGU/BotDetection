@@ -16,8 +16,10 @@
     <webopt:BundleReference runat="server" Path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <script src="https://d3js.org/d3.v3.js"></script>
+    <script src="Scripts/charts.js"></script>
+    <script src="Scripts/global-vars.js"></script>
     <script src="Scripts/helper-methods.js"></script>
-     <script src="Scripts/charts.js"></script>
+     
     
 </head>
 <body>
