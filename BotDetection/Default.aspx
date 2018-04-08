@@ -1,43 +1,58 @@
 ﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="BotDetection._Default" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <asp:UpdatePanel runat="server">
-        <ContentTemplate>
-            <div id="submission">
+
+    <div id="submission" class="page">
+        <div id="intro" class="col-md-6">
+            <h1>Bot Visualisation</h1>
+            <p>Enter a Twitter Username and the site will retreive the tweets associated with it.  These will then be used to generate visualisations which may indicate wether the account is controlled by a human or not.</p>
+        </div>
+        <asp:UpdatePanel runat="server">
+            <ContentTemplate>
                 <input id="userInput" />
-                <button id="userSubmit" onclick="getData()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                 <p class="error">Please put in a name</p>
+                <button class="btn btn-info" id="userSubmit" onclick="getData()">Submit</button>
+
+            </ContentTemplate>
+        </asp:UpdatePanel>
+        <p class="error">Please put in a name</p>
+        <div id="spinnerCont" class="col-md-12">
+            <div class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
-        </ContentTemplate>
-    </asp:UpdatePanel>
-   
+        </div>
+
+    </div>
+
     <!--Heat Map Stuff-->
-    <div class="heatMap">
-        <h3>Heatmap of Users Tweets</h3>
+    <div class="heatMap page">
+        <h3 id="heatTitle">Heatmap of Users Tweets</h3>
         <div class="innerHeatMap"></div>
-            <h3 id="heatCompareTitle">Example Heatmap of Bot Tweets</h3>
-            <asp:UpdatePanel runat="server">
-                <ContentTemplate>
-                    <div class="compareButtons">
-                        <button id="humanHeatMap" type="button" class="btn btn-info" onclick="drawHumanHeatMap();">Human</button>
-                        <button id="botHeatMap" type="button" class="btn btn-info" onclick="drawBotHeatMap();">Bot</button>
-                        
-                    </div>
-                </ContentTemplate>
-            </asp:UpdatePanel>
-            <div class="innerHeatMap2"></div>
+        <h3 id="heatCompareTitle">Example Heatmap of Bot Tweets</h3>
+        <asp:UpdatePanel runat="server">
+            <ContentTemplate>
+                <div class="compareButtons">
+                    <button id="humanHeatMap" type="button" class="btn btn-info" onclick="drawHumanHeatMap();">Human</button>
+                    <button id="botHeatMap" type="button" class="btn btn-info" onclick="drawBotHeatMap();">Bot</button>
+
+                </div>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+        <div class="innerHeatMap2"></div>
     </div>
     <!--/Heat Map Stuff-->
 
     <!--Pie Chart Stuff-->
-    <div class="pieChart row">   
-        <div class="innerPieChart col-md-6"> 
-            <h3>Time taken to Retweet</h3>
+    <div class="pieChart row page">
+        <div class="innerPieChart col-md-6">
+            <h3 id="pieTitle">Time taken to Retweet</h3>
         </div>
-            <div class="innerPieChart2 col-md-6">
-                <h3 id="pieCompareTitle">Example Pie Chart of Bot Retweet times</h3>
+        <div class="innerPieChart2 col-md-6">
+            <h3 id="pieCompareTitle">Example Pie Chart of Bot Retweet times</h3>
 
-                <asp:UpdatePanel runat="server">
+            <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <div class="compareButtons">
                         <button id="humanPieChart" type="button" class="btn btn-info" onclick="drawHumanPieChart();">Human</button>
@@ -45,20 +60,20 @@
                     </div>
                 </ContentTemplate>
             </asp:UpdatePanel>
-            </div>
+        </div>
 
     </div>
 
     <!--/Pie Chart Stuff-->
 
     <!--Bar Chart Stuff-->
-    <div class="barChart row">
-        <div class="innerBarChart col-md-6"> 
-            <h3>Frequency of User Tweets</h3>
+    <div class="barChart row page">
+        <div class="innerBarChart col-md-6">
+            <h3 id="barTitle">Frequency of User Tweets</h3>
         </div>
-            <div class="innerBarChart2 col-md-6">
-                <h3 id="barCompareTitle">Example Bar Chart of Bot Tweet Frequency</h3>
-                <asp:UpdatePanel runat="server">
+        <div class="innerBarChart2 col-md-6">
+            <h3 id="barCompareTitle">Example Bar Chart of Bot Tweet Frequency</h3>
+            <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <div class="compareButtons">
                         <button id="humanBarChart" type="button" class="btn btn-info" onclick="drawHumanBarChart();">Human</button>
@@ -66,19 +81,19 @@
                     </div>
                 </ContentTemplate>
             </asp:UpdatePanel>
-            </div>
+        </div>
     </div>
     <!--/Bar Chart Stuff-->
 
-    
+
     <!--Sentiment Chart Stuff-->
-    <div class="sentimentChart row">
-        <div class="innerSentimentChart col-md-6"> 
-            <h3>Sentiment of User Tweets</h3>
+    <div class="sentimentChart row page">
+        <div class="innerSentimentChart col-md-6">
+            <h3 id="sentimentTitle">Sentiment of User Tweets</h3>
         </div>
-            <div class="innerSentimentChart2 col-md-6">
-                <h3 id="sentimentCompareTitle">Example Sentiment Chart of Bot Tweets</h3>
-                <asp:UpdatePanel runat="server">
+        <div class="innerSentimentChart2 col-md-6">
+            <h3 id="sentimentCompareTitle">Example Sentiment of Bot Tweets</h3>
+            <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <div class="compareButtons">
                         <button id="humanSentimentChart" type="button" class="btn btn-info" onclick="drawHumanSentimentChart();">Human</button>
@@ -86,7 +101,7 @@
                     </div>
                 </ContentTemplate>
             </asp:UpdatePanel>
-            </div>
+        </div>
     </div>
     <!--/Sentiment Chart Stuff-->
 
@@ -96,18 +111,18 @@
         var heatMapDataReload = botHeatData;
         var pieChartDataReload = botPieData;
         var barChartDataReload = botBarData;
-      //  var SentimentChartDataReload = botSentimentData;
+        //  var SentimentChartDataReload = botSentimentData;
 
 
         //Setting the div sizes based on window size
         $(function () {
-            $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
-            $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).innerHeight() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
             $(window).resize(function () {
-                $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ height: $(window).innerHeight() });
+                $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).innerHeight() });
             });
             $(window).resize(function () {
-                $('.sentimentChart, .pieChart, .heatMap, .barChart, #MainContent_ctl00').css({ width: $(window).innerWidth() });
+                $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
             });
         });
 
@@ -197,13 +212,17 @@
             return output;
         }
 
+
         //Getting and formatting tweets (setting variables etc)
         function getData() {
+
             if ($("#userInput").val() == "") {
                 d3.select(".error").style("display", "block");
                 return;
             }
 
+            $("#spinnerCont").css({ display: "block" });
+            var name = "";
             var heatData = [];
             var pieChartData = [];
             var barChartData = [];
@@ -223,7 +242,7 @@
             var dataParam = $("#userInput").val();
 
             $.ajax({
-               // url: "/GetTweets.asmx/GetTwitterDataJSON",
+                // url: "/GetTweets.asmx/GetTwitterDataJSON",
                 url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
@@ -231,118 +250,154 @@
                 data: "{ 'userID': '" + dataParam + "' }",
                 success:
 
-                function (response) {
+                    function (response) {
 
-                    //Setting tweets to the JSON objects under d
-                    var tweets = response.d;
+                        //Setting tweets to the JSON objects under d
+                        var tweets = response.d;
 
-                    //Initialising the variables for the tweets
+                        //Initialising the variables for the tweets
 
-                    //Looping for each tweet and adding the variables to the arrays
-                    for (var i in tweets) {
-                        var tweet = tweets[i];
+                        //Looping for each tweet and adding the variables to the arrays
+                        for (var i in tweets) {
+                            var tweet = tweets[i];
 
-                        //Tweet stuff
-                        id.push(tweet["tweetID"]);
-                        content.push(tweet["Content"]);
-                        dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
-                        originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
-                        retweeted.push(tweet["Retweeted"]);
-                        retweets.push(tweet["retweets"]);
-                        likes.push(tweet["likes"]);
-                        sentimentScore.push(tweet["sentiment"]);
+                            //Tweet stuff
+                            id.push(tweet["tweetID"]);
+                            content.push(tweet["Content"]);
+                            dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
+                            originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
+                            retweeted.push(tweet["Retweeted"]);
+                            retweets.push(tweet["retweets"]);
+                            likes.push(tweet["likes"]);
+                            sentimentScore.push(tweet["sentiment"]);
 
-                        if (i < 200) {
-                            sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
-                            tweetLengths.push(content[i].length);
-                        }
-                    }
+                            if (name == "") {
+                                name = tweet["screenName"];
+                            }
 
-                    for (var i = 0; i < tweets.length; i++) {
-                        if (i < tweets.length - 1) {
-                            timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
-                        }
-                        else {
-                            timeSince.push(0);
+                            if (i < 200) {
+                                sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
+                                tweetLengths.push(content[i].length);
+                            }
                         }
 
-                        var time = convertMS(dates[i] - originalTimes[i]);
+                        for (var i = 0; i < tweets.length; i++) {
+                            if (i < tweets.length - 1) {
+                                timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
+                            }
+                            else {
+                                timeSince.push(0);
+                            }
 
-                        retweetTimes.push({ id: id[i], rtTime: time });
+                            var time = convertMS(dates[i] - originalTimes[i]);
 
+                            retweetTimes.push({ id: id[i], rtTime: time });
+
+                        }
+                        //Setting Data for charts
+                        heatData = getHeatData(dates);
+                        pieChartData = getPieData(retweetTimes);
+                        barChartData = getBarData(dates);
+
+
+                        if (document.readyState === "complete") {
+
+                            //Drawing the charts
+                            drawHeatmapChart(heatData, ".innerHeatMap");
+                            drawHeatmapChart(botHeatData, ".innerHeatMap2");
+
+                            drawPieChart(pieChartData, ".innerPieChart");
+                            drawPieChart(botPieData, ".innerPieChart2");
+
+                            drawBarChart(barChartData, ".innerBarChart");
+                            drawBarChart(botBarData, ".innerBarChart2");
+
+                            drawSentimentChart(sentimentData, ".innerSentimentChart");
+                            drawSentimentChart(humanSentimentData, ".innerSentimentChart2");
+                        }
+
+                        $("#heatTitle").html("Heatmap of " + name + "'s Tweets");
+                        $("#pieTitle").html("Time taken to Retweet by " + name);
+                        $("#barTitle").html("Frequency of " + name + "'s Tweets");
+                        $("#sentimentTitle").html("Sentiment of " + name + "'s Tweets");
+
+                        $("#spinnerCont").css({ display: "none" });
+                        $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
+
+                        var $pages = $('.page');
+                        var currentIndex = 0;
+                        var initialScroll = true;
+                        var lastScroll = 0;
+                        var currentScroll = 0;
+                        var targetScroll = 1; // must be set to the same value as the first scroll
+
+                        function doScroll(newScroll) {
+                            $('html, body').animate({
+                                scrollTop: newScroll
+                            }, 'slow');
+                        }
+
+                        $(window).on('scroll', function () {
+                           
+                            // get current position
+                            currentScroll = $(window).scrollTop();
+                             //if scrolling on data load
+                            
+                            // passthrough
+                            if (targetScroll == -1) {
+                                // no target set, allow execution by doing nothing here
+                            }
+
+                            // still moving
+                            else if (currentScroll != targetScroll) {
+                                // target not reached, ignore this scroll event
+                                return;
+                            }
+                            // reached target
+                            else if (currentScroll == targetScroll) {
+                                // update comparator for scroll direction
+                                lastScroll = currentScroll;
+                                // enable passthrough
+                                targetScroll = -1;
+                                // ignore this scroll event
+                                return;
+                            }
+
+                            // get scroll direction
+                            var dirUp = currentScroll > lastScroll ? false : true;
+
+                            // update index
+                            currentIndex += (dirUp ? -1 : 1);
+
+                            // reached before start, jump to end
+                            if (currentIndex < 0) {
+                                currentIndex = $pages.length - 1;
+                            }
+                            // reached after end, jump to start
+                            else if (currentIndex >= $pages.length) {
+                                currentIndex = 0;
+                            }
+
+                            // get scroll position of target
+                            targetScroll = $pages.eq(currentIndex).offset().top;
+
+                            // scroll to target
+                            doScroll(targetScroll);
+                        });
+
+                        // scroll to first element
+                        $(window).scrollTop(1)
                     }
-                    //Setting Data for charts
-                    heatData = getHeatData(dates);
-                    pieChartData = getPieData(retweetTimes);
-                    barChartData = getBarData(dates);
-
-
-                    if (document.readyState === "complete") {
-                        
-                        //Drawing the charts
-                        drawHeatmapChart(heatData, ".innerHeatMap");
-                        drawHeatmapChart(botHeatData, ".innerHeatMap2");
-
-                        drawPieChart(pieChartData, ".innerPieChart");
-                        drawPieChart(botPieData, ".innerPieChart2");
-
-                        drawBarChart(barChartData, ".innerBarChart");
-                        drawBarChart(botBarData, ".innerBarChart2");
-
-                        drawSentimentChart(sentimentData, ".innerSentimentChart");
-                        drawSentimentChart(humanSentimentData, ".innerSentimentChart2");
-
-                       
-
-                    }
-                    
-
-                    $('html,body').animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
-
-                    /*  $(function () {
-                          //Keep track of last scroll
-                          var divs = [".heatMap", ".pieChart", ".barChart", ".sentimentChart"];
-                          var lastScroll = 0;
-                          var position = 0;
-  
-                          $(window).scroll(function (event) {
-                              //Sets the current scroll position
-                              var st = $(this).scrollTop();
-                              //Determines up-or-down scrolling
-                              if (st > lastScroll) {
-                                  //DOWN
-                                  event.preventDefault();
-                                  event.stopPropagation();
-                                  $('html, body').animate({
-                                      scrollTop: $(divs[position]).offset().top
-                                  }, 'slow');
-                                  position++;
-                                  
-                              }
-                              else {
-                                  //UP
-                                  event.preventDefault();
-                                  event.stopPropagation();
-                                  $('html, body').animate({
-                                      scrollTop: $(divs[position]-1).offset().top
-                                  }, 'slow');
-                                  position--;
-                              }
-                              //Updates scroll position
-                              lastScroll = st;
-                          });
-                      });*/
-                }
             });
             $(window).resize(function () {
 
                 drawHeatmapChart(heatData, ".innerHeatMap");
                 drawHeatmapChart(heatMapDataReload, ".innerHeatMap2");
 
-              
+
                 drawPieChart(pieChartData, ".innerPieChart");
                 drawPieChart(pieChartDataReload, ".innerPieChart2");
-                
+
                 drawBarChart(barChartData, ".innerBarChart");
                 drawBarChart(barChartDataReload, ".innerBarChart2");
 
@@ -399,9 +454,6 @@
             drawSentimentChart(humanSentimentData, ".innerSentimentChart2");
             sentimentChartDataReload = humanSentimentData;
         }
-
-
-       
 
     </script>
 

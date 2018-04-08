@@ -1,203 +1,292 @@
 ﻿body {
-    background-color: white;
+background-color: white;
 }
 
-.row{
-    margin-right:0;
-    margin-left:0;
+.row {
+margin-right: 0;
+margin-left: 0;
 }
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+padding-left: 15px;
+padding-right: 15px;
 }
 
-#submission {
-    position: relative;
-    max-width: 30%;
-    margin-left: auto;
-    margin-right: auto;
-    border: none;
-    top: 50%;
+#intro {
+text-align: center;
+padding-top: 10%;
+padding-bottom: 10%;
+margin-top: 0%;
+margin-left: auto;
+display: block;
+margin-right: auto;
+float: none;
+}
+
+#intro h1 {
+margin: 0;
+}
+
+#intro p {
+padding-top: 20px;
+}
+
+#MainContent_ctl00 {
+position: relative;
+max-width: 30%;
+margin-left: auto;
+margin-right: auto;
+border: none;
 }
 
 #userInput {
-    width: 80%;
-    height: 40px;
-    font-size: 30px;
-    padding-left: 5%;
-    border: 1px solid gray;
-    border-bottom-left-radius: 30px;
-    border-top-left-radius: 30px;
+width: 80%;
+height: 40px;
+padding-left: 5%;
+border: 2px solid #46b8da;
+border-radius: 4px;
 }
 
 #userInput:focus {
-    border:none;
+border: none;
 }
 
 #userSubmit {
-    position: absolute;
-    z-index: 30;
-    width: 20%;
-    height: 40px;
-    border: 1px solid gray;
-    border-left:none;
-    background-color: white;
-    border-bottom-right-radius: 30px;
-    border-top-right-radius: 30px;
-    margin-left: -5px;
-    padding-left: 15px;
+position: absolute;
+z-index: 30;
+height: 40px;
+margin-left: -5px;
+padding-left: 15px;
 }
 
 #userSubmit span {
-    font-size:30px;
-    color:black;
+font-size: 30px;
+color: black;
 }
 
 #userSubmit span:hover {
-        color: gray;
-    }
+color: gray;
+}
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
-    .body-content {
-        padding: 0;
-    }
+.body-content {
+padding: 0;
+}
 }
 
 rect.bordered {
-    stroke: #E6E6E6;
-    stroke-width: 2px;
+stroke: #E6E6E6;
+stroke-width: 2px;
 }
 
 text.mono {
-    fill: #aaa;
+fill: #aaa;
 }
 
 text {
-    font-family: Consolas, courier;
+font-family: Consolas, courier;
 }
 
 text.axis-workweek {
-    fill: #000;
+fill: #000;
 }
 
 text.axis-worktime {
-    fill: #000;
+fill: #000;
 }
 
-.barChart{
-    background-color:white;
-    padding:3px;
+.barChart {
+background-color: white;
+padding: 3px;
 }
 
 .main text {
-    font: 10px sans-serif;
+font: 10px sans-serif;
 }
 
 .axis line, .axis path {
-    shape-rendering: crispEdges;
-    stroke: black;
-    fill: none;
+shape-rendering: crispEdges;
+stroke: black;
+fill: none;
 }
 
 circle {
-    fill: black;
+fill: black;
 }
 
 
 .bar--positive {
-    fill: steelblue;
+fill: steelblue;
 }
 
 .bar--negative {
-    fill: darkorange;
+fill: darkorange;
 }
 
 .axis text {
-    font: 10px sans-serif;
+font: 10px sans-serif;
 }
 
 .axis path,
 .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+fill: none;
+stroke: #000;
+shape-rendering: crispEdges;
 }
 
 /*.pieChart svg, .innerHeatMap svg, .innerHeatMap2 svg, .sentimentChart svg, .barChart svg */
 
-svg{
-    margin: 0 auto;
-    display: block;
-    
+svg {
+margin: 0 auto;
+display: block;
 }
 
 
 .innerHeatMap, innerHeatMap2 {
-    display: flex;
-    height: 45%;
+display: flex;
+height: 45%;
 }
 
 .barChart, .pieChart, .heatMap, .sentimentChart {
-    display: none;
-    background-color: white;
-    position:relative;
-    padding-top: 25px;
-    padding-bottom: 25px;
+display: none;
+background-color: white;
+position: relative;
+padding-top: 25px;
+padding-bottom: 25px;
 }
 
 .error {
-
-color:red;
-display:none;
-
+color: red;
+display: none;
 }
 
-.innerBarChart  .bar, .innerBarChart2 .bar {
-    fill: steelblue;
+.innerBarChart .bar, .innerBarChart2 .bar {
+fill: steelblue;
 }
 
 .barChart .axis text {
-    font: 10px sans-serif;
+font: 10px sans-serif;
 }
 
 .barChart .axis path,
 .barChart .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+fill: none;
+stroke: #000;
+shape-rendering: crispEdges;
 }
 
 .barChart .x.axis path {
-    display: none;
+display: none;
 }
+
 .pieChart h3, .heatMap h3, .sentimentChart h3, .barChart h3 {
-    text-align: center;
+text-align: center;
 }
 
 
 .compare {
-
-text-align:center;
+text-align: center;
 }
 
 .compareButtons {
-
-text-align:center;
+text-align: center;
 }
 
 
 @media screen and (max-width: 768px) {
 
-    .innerPieChart, .innerPieChart2 {
-
-          height:50%;
-    }
-
+.innerPieChart, .innerPieChart2 {
+height: 100%;
+}
 }
 
 .innerPieChart, .innerPieChart2 {
-    height: 100%;
+height: 50%;
+}
+
+
+
+/*SPINNER*/
+
+.lds-ring {
+display: block;
+width: 64px;
+height: 64px;
+margin: 0 auto;
+}
+
+.lds-ring div {
+box-sizing: border-box;
+display: block;
+position: absolute;
+width: 51px;
+height: 51px;
+margin: 6px;
+border: 6px solid #000;
+border-radius: 50%;
+animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+border-color: #000 transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+0% {
+transform: rotate(0deg);
+}
+
+100% {
+transform: rotate(360deg);
+}
+}
+
+#spinnerCont {
+display: none;
+}
+
+/**TOOLTIP*/
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 100%;
+        left: 50%;
+        margin-left: -60px;
+        /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+        opacity: 0;
+        transition: opacity 1s;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+::-webkit-scrollbar {
+    width: 0px; /* remove scrollbar space */
+    background: transparent; /* optional: just make scrollbar invisible */
 }

@@ -72,11 +72,10 @@ namespace BotDetection
                     //Initialise tweet object
                     //Making the json tweet an object
                     JObject tweet = JObject.Parse(parsedJson[i].ToString());
-                    //Setting the user to an object to query against
-                    JObject tweetuser = JObject.Parse(parsedJson[i]["user"].ToString());
                     //Setting the entity to an object to query against
                     JObject entity = JObject.Parse(parsedJson[i]["entities"].ToString());
                     JObject retweet = new JObject();
+                    JObject user = JObject.Parse(parsedJson[i]["user"].ToString());
                     
                     //Setting the hashtags to an array to loop through
                     JArray hashtags = JArray.Parse(entity["hashtags"].ToString());
@@ -91,6 +90,7 @@ namespace BotDetection
                         likes = (int)tweet["favorite_count"],
                         sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).AverageSentimentTokens,
                         PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
+                        screenName = user["name"].ToString(),
                     };
 
                     //Setting the retweeted status

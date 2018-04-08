@@ -83,8 +83,8 @@ function drawHeatmapChart(data, className) {
         });
 
     var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-        width = $(".heatMap").outerWidth() / 1.8 - margin.left - margin.right,
-        height = $(".heatMap").outerHeight() / 2 - margin.top - margin.bottom,
+        width = $(".heatMap").outerWidth() / 2.2 - margin.left - margin.right,
+        height = $(".heatMap").outerHeight() / 2.2 - margin.top - margin.bottom,
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize / 2,
         buckets = 9,
@@ -183,8 +183,12 @@ function drawSentimentChart(data, className) {
         });
 
     var margin = { top: 20, right: 30, bottom: 40, left: 30 },
-        width = $(window).innerWidth() / 3 - margin.left - margin.right,
-        height = $(window).innerHeight() / 1.5 - margin.top - margin.bottom;
+        width = 0,
+        height = 0;
+
+    width = (($(window).innerWidth() < 768) ? $(window).innerWidth() / 3 - margin.left - margin.right : $(window).innerWidth() / 3 - margin.left - margin.right);
+    height = (($(window).innerWidth() < 768) ? $(window).innerHeight() / 2.5 - margin.left - margin.right : $(window).innerHeight() / 2 - margin.left - margin.right);
+
 
     var x = d3.scale.linear()
         .range([0, width]);
@@ -250,7 +254,7 @@ function drawPieChart(dataset, className) {
     var width = $(".pieChart").outerWidth() / 3;
     var height = $(".pieChart").outerWidth() / 3;
     var radius = Math.min(width, height) / 2;
-    var donutWidth = radius/10;
+    var donutWidth = radius / 10;
     var color = d3.scale.category10();
     var legendRectSize = 18;
     var legendSpacing = 4;
@@ -316,10 +320,12 @@ function drawBarChart(data, className) {
         });
     console.log(data);
 
-    var margin = { top: 40, right: 20, bottom: 30, left: 40 },
-        width = $(window).innerWidth() / 3 - margin.left - margin.right,
-        height = $(window).innerHeight() / 2 - margin.top - margin.bottom;
+    var margin = { top: 20, right: 30, bottom: 40, left: 30 },
+        width = 0,
+        height = 0;
 
+    width = (($(window).innerWidth() < 768) ? $(window).innerWidth() / 3 - margin.left - margin.right : $(window).innerWidth() / 3 - margin.left - margin.right);
+    height = (($(window).innerWidth() < 768) ? $(window).innerHeight() / 2.5 - margin.left - margin.right : $(window).innerHeight() / 2 - margin.left - margin.right);
 
     var x = d3.scale.ordinal()
         .rangeRoundBands([0, width], .1);
