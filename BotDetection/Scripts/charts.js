@@ -82,13 +82,13 @@ function drawHeatmapChart(data, className) {
 
         });
 
-    var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-        width = $(".heatMap").outerWidth() / 2.2 - margin.left - margin.right,
-        height = $(".heatMap").outerHeight() / 2.2 - margin.top - margin.bottom,
-        gridSize = Math.floor(width / 24),
+    var margin = { top: 20, right: 0, bottom: 50, left: 30 },
+        width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 1.5 - margin.left - margin.right : $(window).outerWidth() / 2 - margin.left - margin.right);
+        height = (($(window).outerWidth() < 992) ? $(window).outerHeight() * 0.45 / 1.5 - margin.left - margin.right : $(window).outerHeight() * 0.5 / 1.3  - margin.top - margin.bottom);
+        gridSize = Math.floor((width / 24)),
         legendElementWidth = gridSize / 2,
         buckets = 9,
-        colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
+        colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], 
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
 
@@ -160,12 +160,6 @@ function drawHeatmapChart(data, className) {
             .attr("height", gridSize / 2)
             .style("fill", function (d, i) { return colors[i]; });
 
-        legend.append("text")
-            .attr("class", "mono")
-            .text("Low to High")
-            .attr("x", legendElementWidth)
-            .attr("y", gridSize * 8);
-
 
         legend.exit().remove();
 
@@ -186,9 +180,8 @@ function drawSentimentChart(data, className) {
         width = 0,
         height = 0;
 
-    width = (($(window).innerWidth() < 768) ? $(window).innerWidth() / 3 - margin.left - margin.right : $(window).innerWidth() / 3 - margin.left - margin.right);
-    height = (($(window).innerWidth() < 768) ? $(window).innerHeight() / 2.5 - margin.left - margin.right : $(window).innerHeight() / 2 - margin.left - margin.right);
-
+    width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 2.5 - margin.left - margin.right);
+    height = (($(window).outerWidth() < 992) ? $(window).outerHeight() / 2.5 - margin.left - margin.right : $(window).outerHeight() / 1.2 - margin.left - margin.right);
 
     var x = d3.scale.linear()
         .range([0, width]);
@@ -251,12 +244,12 @@ function drawPieChart(dataset, className) {
 
         });
 
-    var width = $(".pieChart").outerWidth() / 3;
-    var height = $(".pieChart").outerWidth() / 3;
+    var width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 3 : $(window).outerWidth() / 2);
+    var height = (($(window).outerWidth() < 992) ? $(window).outerHeight() / 3 : $(window).outerHeight() / 2);
     var radius = Math.min(width, height) / 2;
     var donutWidth = radius / 10;
     var color = d3.scale.category10();
-    var legendRectSize = 18;
+    var legendRectSize = donutWidth;
     var legendSpacing = 4;
 
     var svg = d3.select(className)
@@ -324,8 +317,8 @@ function drawBarChart(data, className) {
         width = 0,
         height = 0;
 
-    width = (($(window).innerWidth() < 768) ? $(window).innerWidth() / 3 - margin.left - margin.right : $(window).innerWidth() / 3 - margin.left - margin.right);
-    height = (($(window).innerWidth() < 768) ? $(window).innerHeight() / 2.5 - margin.left - margin.right : $(window).innerHeight() / 2 - margin.left - margin.right);
+    width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 2.5 - margin.left - margin.right);
+    height = (($(window).outerWidth() < 992) ? $(window).outerHeight() / 2.5 - margin.left - margin.right : $(window).outerHeight() / 1.2 - margin.left - margin.right);
 
     var x = d3.scale.ordinal()
         .rangeRoundBands([0, width], .1);

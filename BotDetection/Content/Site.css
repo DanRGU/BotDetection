@@ -8,10 +8,7 @@ margin-left: 0;
 }
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
-.body-content {
-padding-left: 15px;
-padding-right: 15px;
-}
+
 
 #intro {
 text-align: center;
@@ -83,6 +80,7 @@ stroke-width: 2px;
 
 text.mono {
 fill: #aaa;
+font-size:1.1vw;
 }
 
 text {
@@ -147,14 +145,17 @@ display: block;
 .innerHeatMap, innerHeatMap2 {
 display: flex;
 height: 45%;
+align-items:center;
 }
 
 .barChart, .pieChart, .heatMap, .sentimentChart {
 display: none;
 background-color: white;
 position: relative;
-padding-top: 25px;
-padding-bottom: 25px;
+}
+.page .col-md-6 {
+    padding-left:0px;
+    padding-right:0px;
 }
 
 .error {
@@ -183,6 +184,7 @@ display: none;
 
 .pieChart h3, .heatMap h3, .sentimentChart h3, .barChart h3 {
 text-align: center;
+font-size:16px;
 }
 
 
@@ -286,7 +288,3 @@ display: none;
         visibility: visible;
         opacity: 1;
     }
-::-webkit-scrollbar {
-    width: 0px; /* remove scrollbar space */
-    background: transparent; /* optional: just make scrollbar invisible */
-}

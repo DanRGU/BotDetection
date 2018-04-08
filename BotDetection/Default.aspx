@@ -116,13 +116,13 @@
 
         //Setting the div sizes based on window size
         $(function () {
-            $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).innerHeight() });
-            $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).outerHeight() });
+            $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).outerWidth() });
             $(window).resize(function () {
-                $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).innerHeight() });
+                $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).outerHeight() });
             });
             $(window).resize(function () {
-                $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
+                $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).outerWidth() });
             });
         });
 
