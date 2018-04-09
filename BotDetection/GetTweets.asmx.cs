@@ -106,9 +106,6 @@ namespace BotDetection
                         JObject hashtagContent = JObject.Parse(hashtags[j].ToString());
                         tweetArr[i].Hashtags.Add(hashtagContent["text"].ToString());
                     }
-
-
-
                 }
             }
 

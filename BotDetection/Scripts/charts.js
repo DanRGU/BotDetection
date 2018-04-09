@@ -93,7 +93,7 @@ function drawHeatmapChart(data, className) {
         times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
 
 
-    var svg = d3.select(className).append("svg")
+    var svg = d3.select(className).insert("svg", ":first-child")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -199,7 +199,8 @@ function drawSentimentChart(data, className) {
         .tickSize(0)
         .tickPadding(6);
 
-    var svg = d3.select(className).append("svg")
+    var svg = d3.select(className)
+        .insert('svg', ":nth-child(2)")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -253,7 +254,7 @@ function drawPieChart(dataset, className) {
     var legendSpacing = 4;
 
     var svg = d3.select(className)
-        .append('svg')
+        .insert('svg', ":nth-child(2)")
         .attr('width', width)
         .attr('height', height)
         .append('g')
@@ -334,7 +335,8 @@ function drawBarChart(data, className) {
         .scale(y)
         .orient("left");
 
-    var svg = d3.select(className).append("svg")
+    var svg = d3.select(className)
+        .insert('svg', ":nth-child(2)")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
