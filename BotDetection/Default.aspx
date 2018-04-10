@@ -14,7 +14,13 @@
 
             </ContentTemplate>
         </asp:UpdatePanel>
-       
+      <div class="popup">
+    <p>Name: Dano</p>
+    <p>Followers: 300 </p>
+    <p>Tweets : 11k</p>
+    <p>Created : 2009 </p>
+    <a href="#heatmap">Heatmap</a>
+</div>
             <p class="error">Please put in a name</p>
         <div id="spinnerCont" class="col-md-12"> 
             <div class="lds-ring">
@@ -28,7 +34,7 @@
     </div>
 
     <!--Heat Map Stuff-->
-    <div class="heatMap page">
+    <div id="heatmap" class="heatMap page">
         <h3 id="heatTitle">Heatmap of Users Tweets</h3>
         <div class="innerHeatMap"></div>
         <h3 id="heatCompareTitle">Example Heatmap of Bot Tweets</h3>
@@ -324,6 +330,7 @@
                     $("#sentimentTitle").html("Sentiment of " + name + "'s Tweets");
 
                     $("#spinnerCont").css({ display: "none" });
+                    $(".popup").css({ display: "block" });
                     $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
 
                     var $pages = $('.page');

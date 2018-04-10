@@ -285,3 +285,14 @@ display: none;
 .active {
     background-color: #5cb85c;
 }
+
+.popup {
+    background-color: #ffffff;
+    position: fixed;
+    padding: 15px;
+    top: 40%;
+    z-index: 1000000;
+    border: 1px solid darkgray;
+    border-radius: 4px;
+    display:none;
+}
