@@ -183,7 +183,9 @@ function drawSentimentChart(data, className) {
     width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 2.5 - margin.left - margin.right);
     height = (($(window).outerWidth() < 992) ? $(window).outerHeight() / 2.5 - margin.left - margin.right : $(window).outerHeight() / 1.2 - margin.left - margin.right);
 
+    
     var x = d3.scale.linear()
+        .domain([-1, 1])
         .range([0, width]);
 
     var y = d3.scale.ordinal()

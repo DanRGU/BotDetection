@@ -14,27 +14,39 @@
 
             </ContentTemplate>
         </asp:UpdatePanel>
+
+
         <div class="popup">
             <div id="popup-contents">
                 <p id="name">Name: </p>
                 <p id="followers">Followers:  </p>
                 <p id="tweets">Tweets : </p>
                 <p id="created">Created :  </p>
-                <p><a href="#heatmap">Heatmap</a></p>
-                <p><a href="#piechart">Pie Chart</a></p>
-                <p><a href="#barchart">Bar Chart</a></p>
-                <p><a href="#sentiment">Sentiment</a></p>
-            </div>
+                <p>
+                    <a href="#heatmap">Heatmap</a>
+                </p>
+                <div class="tooltip">
+                    ?
+                    <span class="tooltiptext">Tooltip text</span>
+                </div>
+            <pclass=><a href="#piechart">Pie Chart</a></pclass=>
+            <p><a href="#barchart">Bar Chart</a></p>
+            <p><a href="#sentiment">Sentiment</a></p>
         </div>
-        <p class="error">Please put in a name</p>
-        <div id="spinnerCont" class="col-md-12">
-            <div class="lds-ring">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
+    </div>
+
+
+
+
+    <p class="error">Please put in a name</p>
+    <div id="spinnerCont" class="col-md-12">
+        <div class="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
+    </div>
 
     </div>
 
@@ -126,7 +138,7 @@
         var heatMapDataReload = botHeatData;
         var pieChartDataReload = botPieData;
         var barChartDataReload = botBarData;
-        //  var SentimentChartDataReload = botSentimentData;
+        var sentimentChartDataReload = botSentimentData;
 
 
         //Setting the div sizes based on window size
@@ -234,8 +246,8 @@
                 d3.select(".error").style("display", "block");
                 return;
             }
-            
-            
+
+
             $("#spinnerCont").css({ display: "block" });
 
             var name = "";
@@ -261,8 +273,12 @@
             var dataParam = $("#userInput").val();
             console.log(dataParam);
 
+            //if (dataParam == "") {
+            //    dataParam
+            // }
+
             $.ajax({
-                 url: "/GetTweets.asmx/GetTwitterDataJSON",
+                url: "/GetTweets.asmx/GetTwitterDataJSON",
                 //url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
@@ -271,9 +287,9 @@
                 success:
 
                 function (response) {
-
+                    console.log(response.Message);
                     //Setting tweets to the JSON objects under d
-                    var tweets = response.d;
+                    var tweets = response.d.tweets;
 
 
                     //Looping for each tweet and adding the variables to the arrays
@@ -281,9 +297,9 @@
                         var tweet = tweets[i];
 
                         if (i < 1) {
-                            followers = tweet["followers"];
-                            numTweets = tweet["numTweets"];
-                            createdAt = new Date(parseFloat(tweet["created"].substr(6)));
+                            followers = response.d["followers"];
+                            numTweets = response.d["numTweets"];
+                            createdAt = new Date(parseFloat(response.d["created"].substr(6)));
 
                         }
 
@@ -299,7 +315,7 @@
 
 
                         if (name == "") {
-                            name = tweet["screenName"];
+                            name = response.d["screenName"];
                         }
 
                         if (i < 200) {
@@ -426,7 +442,7 @@
                     // scroll to first element
                     $(window).scrollTop(1)
                 },
-                failure: function (response) {
+                error: function (response) {
                     console.log("FAILED");
                     console.log(response);
                     $("#spinnerCont").css({ display: "none" });
@@ -447,7 +463,7 @@
                 drawBarChart(barChartDataReload, ".innerBarChart2");
 
                 drawSentimentChart(sentimentData, ".innerSentimentChart");
-                drawSentimentChart(sentimentData, ".innerSentimentChart2");
+                drawSentimentChart(sentimentChartDataReload, ".innerSentimentChart2");
             });
         }
 

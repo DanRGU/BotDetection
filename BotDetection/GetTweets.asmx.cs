@@ -35,12 +35,12 @@ namespace BotDetection
             
                 Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
                 var sentimentInstance = Sentiment.Instance;
-                var lastTweets = Timeline.GetUserTimeline(userID, 200).ToArray();
+                var lastTweets = Timeline.GetUserTimeline(userID, 2000).ToArray();
 
                 var allTweets = new List<ITweet>(lastTweets);
                 var beforeLast = allTweets;
 
-                while (lastTweets.Length > 0 && allTweets.Count <= 500)
+                while (lastTweets.Length > 0 && allTweets.Count <= 5000)
                 {
                     var idOfOldestTweet = lastTweets.Select(x => x.Id).Min();
                     Console.WriteLine($"Oldest Tweet Id = {idOfOldestTweet}");
@@ -49,7 +49,7 @@ namespace BotDetection
                     {
                         // We ensure that we only get tweets that have been posted BEFORE the oldest tweet we received
                         MaxId = idOfOldestTweet - 1,
-                        MaximumNumberOfTweetsToRetrieve = allTweets.Count > 480 ? (500 - allTweets.Count) : 200
+                        MaximumNumberOfTweetsToRetrieve = allTweets.Count > 4800 ? (5000 - allTweets.Count) : 2000
                     };
 
                     lastTweets = Timeline.GetUserTimeline(userID, timelineRequestParameters).ToArray();
@@ -59,11 +59,15 @@ namespace BotDetection
 
                 //Using Json.NET to change json string to an array
                 JArray parsedJson = JArray.Parse(jsonString);
-
+                
                 SingleTweet[] tweetArr = new SingleTweet[parsedJson.Count()];
+            string screenName = "";
+            int followers=0;
+            int numTweets=0;
+            DateTime created = new DateTime();
 
-                //If an account was returned
-                if (allTweets != null)
+            //If an account was returned
+            if (allTweets != null)
                 {
                     Trace.WriteLine(allTweets);
                     //Loop for each tweet
@@ -91,14 +95,15 @@ namespace BotDetection
                             likes = (int)tweet["favorite_count"],
                             sentiment = sentimentInstance.GetScore(tweet["text"].ToString()).AverageSentimentTokens,
                             PostTime = DateTime.ParseExact(tweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
-                            screenName = user["name"].ToString(),
-                            followers = (int)user["followers_count"],
-                            numTweets = (int)user["statuses_count"],
-                            created = DateTime.ParseExact(user["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)
                         };
 
+                    screenName = user["name"].ToString();
+                    followers = (int)user["followers_count"];
+                    numTweets = (int)user["statuses_count"];
+                    created = DateTime.ParseExact(user["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+
                         //Setting the retweeted status
-                        if (parsedJson[i]["retweeted_status"].ToString().GetType() == typeof(string) && parsedJson[i]["retweeted_status"].ToString() != "")
+                    if (parsedJson[i]["retweeted_status"].ToString().GetType() == typeof(string) && parsedJson[i]["retweeted_status"].ToString() != "")
                         {
                             retweet = JObject.Parse(parsedJson[i]["retweeted_status"].ToString());
                             tweetArr[i].RetweetTime = DateTime.ParseExact(retweet["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
@@ -112,9 +117,9 @@ namespace BotDetection
                         }
                     }
                 }
+            User twitterUser = new User(screenName,followers,numTweets,created,tweetArr);
 
-
-                return tweetArr;
+            return twitterUser;
             
         }
     }
