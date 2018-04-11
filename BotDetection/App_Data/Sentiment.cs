@@ -60,14 +60,13 @@ namespace SharpFinn
                 return _instance;
             }
         }
-
-        #region ctor
+        
         private Sentiment()
         {
             _words = new Dictionary<string, int>();
-           //using (var file = new StreamReader("C:\\Users\\1308353\\Source\\Repos\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
-           // using (var file = new StreamReader("D:\\home\\site\\wwwroot\\db\\AFINN-111.txt"))
-             using (var file = new StreamReader("C:\\Users\\danob\\Documents\\Uni\\Honours\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
+           using (var file = new StreamReader("C:\\Users\\1308353\\Source\\Repos\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
+          //  using (var file = new StreamReader("D:\\home\\site\\wwwroot\\db\\AFINN-111.txt"))
+            // using (var file = new StreamReader("C:\\Users\\danob\\Documents\\Uni\\Honours\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
             //using (var file = new StreamReader("C:\\Users\\Dan\\Desktop\\BotDetection\\BotDetection\\db\\AFINN-111.txt"))
             {
                 string line;
@@ -78,7 +77,6 @@ namespace SharpFinn
                 }
             }
         }
-        #endregion
 
         /// <summary>
         /// Tokenizes a string. This method first removes non-alpha characters,

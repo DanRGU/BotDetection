@@ -9,20 +9,25 @@
         </div>
         <asp:UpdatePanel runat="server">
             <ContentTemplate>
-                <input id="userInput" placeholder="@username"/>
+                <input id="userInput" placeholder="@username" />
                 <button class="btn btn-info" id="userSubmit" onclick="getData()">Submit</button>
 
             </ContentTemplate>
         </asp:UpdatePanel>
-      <div class="popup">
-    <p>Name: Dano</p>
-    <p>Followers: 300 </p>
-    <p>Tweets : 11k</p>
-    <p>Created : 2009 </p>
-    <a href="#heatmap">Heatmap</a>
-</div>
-            <p class="error">Please put in a name</p>
-        <div id="spinnerCont" class="col-md-12"> 
+        <div class="popup">
+            <div id="popup-contents">
+                <p id="name">Name: </p>
+                <p id="followers">Followers:  </p>
+                <p id="tweets">Tweets : </p>
+                <p id="created">Created :  </p>
+                <p><a href="#heatmap">Heatmap</a></p>
+                <p><a href="#piechart">Pie Chart</a></p>
+                <p><a href="#barchart">Bar Chart</a></p>
+                <p><a href="#sentiment">Sentiment</a></p>
+            </div>
+        </div>
+        <p class="error">Please put in a name</p>
+        <div id="spinnerCont" class="col-md-12">
             <div class="lds-ring">
                 <div></div>
                 <div></div>
@@ -39,21 +44,23 @@
         <div class="innerHeatMap"></div>
         <h3 id="heatCompareTitle">Example Heatmap of Bot Tweets</h3>
 
-        <div class="innerHeatMap2"> <asp:UpdatePanel runat="server">
-        <ContentTemplate>
-            <div class="compareButtons">
-                <button id="humanHeatMap" type="button" class="btn btn-info" onclick="drawHumanHeatMap();">Human</button>
-                <button id="botHeatMap" type="button" class="btn btn-info active" onclick="drawBotHeatMap();">Bot</button>
+        <div class="innerHeatMap2">
+            <asp:UpdatePanel runat="server">
+                <ContentTemplate>
+                    <div class="compareButtons">
+                        <button id="humanHeatMap" type="button" class="btn btn-info" onclick="drawHumanHeatMap();">Human</button>
+                        <button id="botHeatMap" type="button" class="btn btn-info active" onclick="drawBotHeatMap();">Bot</button>
 
-            </div>
-        </ContentTemplate>
-    </asp:UpdatePanel></div>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+        </div>
     </div>
-   
+
     <!--/Heat Map Stuff-->
 
     <!--Pie Chart Stuff-->
-    <div class="pieChart row page">
+    <div id="piechart" class="pieChart row page">
         <div class="innerPieChart col-md-6">
             <h3 id="pieTitle">Time taken to Retweet</h3>
         </div>
@@ -75,7 +82,7 @@
     <!--/Pie Chart Stuff-->
 
     <!--Bar Chart Stuff-->
-    <div class="barChart row page">
+    <div id="barchart" class="barChart row page">
         <div class="innerBarChart col-md-6">
             <h3 id="barTitle">Frequency of User Tweets</h3>
         </div>
@@ -95,7 +102,7 @@
 
 
     <!--Sentiment Chart Stuff-->
-    <div class="sentimentChart row page">
+    <div id="sentiment" class="sentimentChart row page">
         <div class="innerSentimentChart col-md-6">
             <h3 id="sentimentTitle">Sentiment of User Tweets</h3>
         </div>
@@ -125,13 +132,13 @@
         //Setting the div sizes based on window size
         $(function () {
             $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).outerHeight() });
-           // $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
+            // $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
             $(window).resize(function () {
                 $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ height: $(window).outerHeight() });
             });
-          //  $(window).resize(function () {
-           //     $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
-          //  });
+            //  $(window).resize(function () {
+            //     $('.sentimentChart, .pieChart, .heatMap, .barChart, #submission').css({ width: $(window).innerWidth() });
+            //  });
         });
 
         //gather the data for the heatmap
@@ -223,13 +230,14 @@
 
         //Getting and formatting tweets (setting variables etc)
         function getData() {
-
             if ($("#userInput").val() == "") {
                 d3.select(".error").style("display", "block");
                 return;
             }
-
+            
+            
             $("#spinnerCont").css({ display: "block" });
+
             var name = "";
             var heatData = [];
             var pieChartData = [];
@@ -246,12 +254,16 @@
             var sentimentData = [];
             var retweetTimes = [];
             var originalTimes = [];
+            var followers = 0;
+            var createdAt;
+            var numTweets = 0;
 
             var dataParam = $("#userInput").val();
+            console.log(dataParam);
 
             $.ajax({
-                // url: "/GetTweets.asmx/GetTwitterDataJSON",
-                url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
+                 url: "/GetTweets.asmx/GetTwitterDataJSON",
+                //url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -263,11 +275,17 @@
                     //Setting tweets to the JSON objects under d
                     var tweets = response.d;
 
-                    //Initialising the variables for the tweets
 
                     //Looping for each tweet and adding the variables to the arrays
                     for (var i in tweets) {
                         var tweet = tweets[i];
+
+                        if (i < 1) {
+                            followers = tweet["followers"];
+                            numTweets = tweet["numTweets"];
+                            createdAt = new Date(parseFloat(tweet["created"].substr(6)));
+
+                        }
 
                         //Tweet stuff
                         id.push(tweet["tweetID"]);
@@ -278,6 +296,7 @@
                         retweets.push(tweet["retweets"]);
                         likes.push(tweet["likes"]);
                         sentimentScore.push(tweet["sentiment"]);
+
 
                         if (name == "") {
                             name = tweet["screenName"];
@@ -329,8 +348,18 @@
                     $("#barTitle").html("Frequency of " + name + "'s Tweets");
                     $("#sentimentTitle").html("Sentiment of " + name + "'s Tweets");
 
+                    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+
+
+                    $("#name").html("Name : " + name);
+                    $("#followers").html("Followers : " + followers);
+                    $("#tweets").html("Tweets : " + numTweets);
+                    $("#created").html("Account created : " + monthNames[createdAt.getMonth()] + ", " + createdAt.getFullYear());
+
                     $("#spinnerCont").css({ display: "none" });
-                    $(".popup").css({ display: "block" });
+                    $(".popup").css({ display: "flex" });
                     $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
 
                     var $pages = $('.page');
@@ -396,8 +425,15 @@
 
                     // scroll to first element
                     $(window).scrollTop(1)
+                },
+                failure: function (response) {
+                    console.log("FAILED");
+                    console.log(response);
+                    $("#spinnerCont").css({ display: "none" });
                 }
             });
+
+
             $(window).resize(function () {
 
                 drawHeatmapChart(heatData, ".innerHeatMap");
