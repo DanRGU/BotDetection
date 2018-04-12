@@ -22,31 +22,28 @@
                 <p id="followers">Followers:  </p>
                 <p id="tweets">Tweets : </p>
                 <p id="created">Created :  </p>
-                <p>
-                    <a href="#heatmap">Heatmap</a>
-                </p>
+                <p><a href="#heatmap">Heatmap</a></p>
                 <div class="tooltip">
-                    ?
-                    <span class="tooltiptext">Tooltip text</span>
+                    <p><a href="#piechart">Pie Chart</a></p>
+                    <span class="tooltiptext">The pie chart shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
                 </div>
-            <pclass=><a href="#piechart">Pie Chart</a></pclass=>
-            <p><a href="#barchart">Bar Chart</a></p>
-            <p><a href="#sentiment">Sentiment</a></p>
+                <p><a href="#barchart">Bar Chart</a></p>
+                <p><a href="#sentiment">Sentiment</a></p>
+            </div>
         </div>
-    </div>
 
 
 
 
-    <p class="error">Please put in a name</p>
-    <div id="spinnerCont" class="col-md-12">
-        <div class="lds-ring">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+        <p class="error">Please put in a name</p>
+        <div id="spinnerCont" class="col-md-12">
+            <div class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
-    </div>
 
     </div>
 

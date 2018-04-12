@@ -35,12 +35,12 @@ namespace BotDetection
             
                 Auth.SetUserCredentials(oAuthConsumerKey, oAuthConsumerSecret, oAuthAccessToken, oAuthAccessSecret);
                 var sentimentInstance = Sentiment.Instance;
-                var lastTweets = Timeline.GetUserTimeline(userID, 2000).ToArray();
+                var lastTweets = Timeline.GetUserTimeline(userID, 200).ToArray();
 
                 var allTweets = new List<ITweet>(lastTweets);
                 var beforeLast = allTweets;
 
-                while (lastTweets.Length > 0 && allTweets.Count <= 5000)
+                while (lastTweets.Length > 0 && allTweets.Count <= 500)
                 {
                     var idOfOldestTweet = lastTweets.Select(x => x.Id).Min();
                     Console.WriteLine($"Oldest Tweet Id = {idOfOldestTweet}");
@@ -49,7 +49,7 @@ namespace BotDetection
                     {
                         // We ensure that we only get tweets that have been posted BEFORE the oldest tweet we received
                         MaxId = idOfOldestTweet - 1,
-                        MaximumNumberOfTweetsToRetrieve = allTweets.Count > 4800 ? (5000 - allTweets.Count) : 2000
+                        MaximumNumberOfTweetsToRetrieve = allTweets.Count > 480 ? (500 - allTweets.Count) : 200
                     };
 
                     lastTweets = Timeline.GetUserTimeline(userID, timelineRequestParameters).ToArray();
