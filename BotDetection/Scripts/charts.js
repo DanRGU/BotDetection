@@ -180,7 +180,7 @@ function drawSentimentChart(data, className) {
         width = 0,
         height = 0;
 
-    width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 2.5 - margin.left - margin.right);
+    width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 2.8 - margin.left - margin.right);
     height = (($(window).outerWidth() < 992) ? $(window).outerHeight() / 2.5 - margin.left - margin.right : $(window).outerHeight() / 1.2 - margin.left - margin.right);
 
     
@@ -320,7 +320,7 @@ function drawBarChart(data, className) {
         width = 0,
         height = 0;
 
-    width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 2.5 - margin.left - margin.right);
+    width = (($(window).outerWidth() < 992) ? $(window).outerWidth() / 2 - margin.left - margin.right : $(window).outerWidth() / 3 - margin.left - margin.right);
     height = (($(window).outerWidth() < 992) ? $(window).outerHeight() / 2.5 - margin.left - margin.right : $(window).outerHeight() / 1.2 - margin.left - margin.right);
 
     var x = d3.scale.ordinal()

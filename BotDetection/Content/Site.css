@@ -152,8 +152,10 @@ padding-top:20px;
 }
 
 .error {
-color: red;
-display: none;
+    color: red;
+    display: none;
+    text-align: center;
+    margin-top: 20px;
 }
 
 .innerBarChart .bar, .innerBarChart2 .bar {
@@ -254,14 +256,13 @@ display: none;
 /**TOOLTIP*/
 .tooltip {
     position: relative;
-    display: inline-block;
     opacity:1;
 }
 
     .tooltip .tooltiptext {
         visibility: hidden;
         width: 220px;
-        background-color: #808080de;
+        background-color: #808080;
         color: #fff;
         text-align: center;
         border-radius: 6px;
@@ -284,7 +285,7 @@ display: none;
         margin-top: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: transparent #808080de transparent transparent;
+        border-color: transparent #808080 transparent transparent;
     }
 
 
@@ -295,7 +296,6 @@ display: none;
 .popup {
     background: rgba(255, 255, 255, 0.9);
     position: fixed;
-    padding: 15px;
     top: 0;
     z-index: 1000000;
     border-right: 5px solid #46b8da;
@@ -303,21 +303,69 @@ display: none;
     display: none;
     align-items: center;
     height: 100%;
+    min-width: 50px;
+    transition: min-width 1s ease-out;
 }
 
-#popup-contents p{
-    font-size:1vw;
 
+#popup-contents {
+    padding: 15px;
 }
 
-.popup::after {
-    content: " ";
+#popupButton {
+    color: #fff;
+    -moz-transform: rotate(-90deg) !important;
+    -ms-transform: rotate(-90deg) !important;
+    -o-transform: rotate(-90deg) !important;
+    -webkit-transform: rotate(-90deg) !important;
     position: absolute;
-    top: 50%;
-    left: 100%; /* To the right of the tooltip */
-    margin-top: -5px;
-    border-width: 15px;
-    border-style: solid;
-    border-color: transparent transparent transparent #46b8da;
+    left: -30px;
 }
 
+.hidden {
+    display: none;
+}
+
+.visuallyhidden {
+    opacity: 0;
+    transition: opacity 0.25s ease-in;
+}
+
+#name {
+margin-bottom:0px;
+}
+
+#screenName {
+    color: #8a8a8a;
+}
+
+.info {
+    display: inline-block;
+    margin-right:10px;
+}
+.infoTitle{
+    font-weight:bold;
+    margin-bottom:2px;
+}
+
+.shake {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%, 50%, 70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%, 60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}

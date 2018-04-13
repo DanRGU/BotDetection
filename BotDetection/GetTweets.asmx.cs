@@ -62,6 +62,7 @@ namespace BotDetection
                 
                 SingleTweet[] tweetArr = new SingleTweet[parsedJson.Count()];
             string screenName = "";
+            string userName = "";
             int followers=0;
             int numTweets=0;
             DateTime created = new DateTime();
@@ -98,6 +99,7 @@ namespace BotDetection
                         };
 
                     screenName = user["name"].ToString();
+                    userName = user["screen_name"].ToString();
                     followers = (int)user["followers_count"];
                     numTweets = (int)user["statuses_count"];
                     created = DateTime.ParseExact(user["created_at"].ToString(), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
@@ -117,7 +119,7 @@ namespace BotDetection
                         }
                     }
                 }
-            User twitterUser = new User(screenName,followers,numTweets,created,tweetArr);
+            User twitterUser = new User(userName, screenName,followers,numTweets,created,tweetArr);
 
             return twitterUser;
             

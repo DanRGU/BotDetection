@@ -11,31 +11,57 @@
             <ContentTemplate>
                 <input id="userInput" placeholder="@username" />
                 <button class="btn btn-info" id="userSubmit" onclick="getData()">Submit</button>
-
             </ContentTemplate>
         </asp:UpdatePanel>
 
 
         <div class="popup">
-            <div id="popup-contents">
-                <p id="name">Name: </p>
-                <p id="followers">Followers:  </p>
-                <p id="tweets">Tweets : </p>
-                <p id="created">Created :  </p>
-                <p><a href="#heatmap">Heatmap</a></p>
+            <button class="btn btn-info" id="popupButton" onclick="return false;">Show Profile</button>
+            <div id="popup-contents" class="hidden visuallyhidden">
+                <div>
+                    <h3 id="name"></h3>
+                    <p id="screenName"></p>
+                </div>
+                <div id="infoContainer">
+                    <div class="info">
+                        <p class="infoTitle">Followers</p>
+                        <p id="followers"></p>
+                    </div>
+                    <div class="info">
+                        <p class="infoTitle">Tweets</p>
+                        <p id="tweets"></p>
+                    </div>
+                    <div class="info">
+                        <p class="infoTitle">Created</p>
+                        <p id="created"></p>
+                    </div>
+                </div>
+                <h3>Sections</h3>
                 <div class="tooltip">
-                    <p><a href="#piechart">Pie Chart</a></p>
+                    <p><a id="heatmapnav" href="#">Heat Map</a></p>
+                    <span class="tooltiptext">The heatmap shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
+                </div>
+                <div class="tooltip">
+                    <p><a id="piechartnav" href="#">Pie Chart</a></p>
                     <span class="tooltiptext">The pie chart shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
                 </div>
-                <p><a href="#barchart">Bar Chart</a></p>
-                <p><a href="#sentiment">Sentiment</a></p>
+                <div class="tooltip">
+                    <p><a id="barchartnav" href="#">Bar Chart</a></p>
+                    <span class="tooltiptext">The bar chart shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
+                </div>
+                <div class="tooltip">
+                    <p><a id="sentimentnav" href="#">Sentiment Chart</a></p>
+                    <span class="tooltiptext">The sentiment chart shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
+                </div>
+                <button class="btn btn-info" id="popupButtonOpen" onclick="return false;">Hide Info</button>
             </div>
         </div>
 
 
 
 
-        <p class="error">Please put in a name</p>
+        <p id="noNameError" class="error">Please enter a username.</p>
+        <p id="noUserError" class="error">Sorry!  That user doesn't exist.</p>
         <div id="spinnerCont" class="col-md-12">
             <div class="lds-ring">
                 <div></div>
@@ -69,7 +95,7 @@
     <!--/Heat Map Stuff-->
 
     <!--Pie Chart Stuff-->
-    <div id="piechart" class="pieChart row page">
+    <div id="pieChart" class="pieChart row page">
         <div class="innerPieChart col-md-6">
             <h3 id="pieTitle">Time taken to Retweet</h3>
         </div>
@@ -111,7 +137,7 @@
 
 
     <!--Sentiment Chart Stuff-->
-    <div id="sentiment" class="sentimentChart row page">
+    <div id="sentimentchart" class="sentimentChart row page">
         <div class="innerSentimentChart col-md-6">
             <h3 id="sentimentTitle">Sentiment of User Tweets</h3>
         </div>
@@ -130,6 +156,7 @@
     <!--/Sentiment Chart Stuff-->
 
     <script type="text/javascript">      
+        
 
         //Global vars for switching between views (and on size change)
         var heatMapDataReload = botHeatData;
@@ -239,8 +266,14 @@
 
         //Getting and formatting tweets (setting variables etc)
         function getData() {
+
+            d3.select("#noUserError").style("display", "none");
+            d3.select("#noNameError").style("display", "none");
+            $("#MainContent_ctl00").removeClass("shake");
+
             if ($("#userInput").val() == "") {
-                d3.select(".error").style("display", "block");
+                d3.select("#noNameError").style("display", "block");
+                $("#MainContent_ctl00").addClass("shake");
                 return;
             }
 
@@ -248,6 +281,7 @@
             $("#spinnerCont").css({ display: "block" });
 
             var name = "";
+            var userName = "";
             var heatData = [];
             var pieChartData = [];
             var barChartData = [];
@@ -275,8 +309,8 @@
             // }
 
             $.ajax({
-                url: "/GetTweets.asmx/GetTwitterDataJSON",
-                //url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
+                // url: "/GetTweets.asmx/GetTwitterDataJSON",
+                url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -294,6 +328,7 @@
                         var tweet = tweets[i];
 
                         if (i < 1) {
+                            userName = response.d["userName"];
                             followers = response.d["followers"];
                             numTweets = response.d["numTweets"];
                             createdAt = new Date(parseFloat(response.d["created"].substr(6)));
@@ -366,83 +401,23 @@
                     ];
 
 
-                    $("#name").html("Name : " + name);
-                    $("#followers").html("Followers : " + followers);
-                    $("#tweets").html("Tweets : " + numTweets);
-                    $("#created").html("Account created : " + monthNames[createdAt.getMonth()] + ", " + createdAt.getFullYear());
+                    $("#name").html(name);
+                    $("#screenName").html("@" + userName);
+                    $("#followers").html(followers);
+                    $("#tweets").html(numTweets);
+                    $("#created").html(monthNames[createdAt.getMonth()] + ", " + createdAt.getFullYear());
 
                     $("#spinnerCont").css({ display: "none" });
                     $(".popup").css({ display: "flex" });
                     $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
 
-                    var $pages = $('.page');
-                    var currentIndex = 0;
-                    var initialScroll = true;
-                    var lastScroll = 0;
-                    var currentScroll = 0;
-                    var targetScroll = 1; // must be set to the same value as the first scroll
-
-                    function doScroll(newScroll) {
-                        $('html, body').stop().animate({
-                            scrollTop: newScroll
-                        }, 'slow');
-                    }
-
-                    $(window).on('scroll', function () {
-
-                        // get current position
-                        currentScroll = $(window).scrollTop();
-                        //if scrolling on data load
-
-                        // passthrough
-                        if (targetScroll == -1) {
-                            // no target set, allow execution by doing nothing here
-                        }
-
-                        // still moving
-                        else if (currentScroll != targetScroll) {
-                            // target not reached, ignore this scroll event
-                            return;
-                        }
-                        // reached target
-                        else if (currentScroll == targetScroll) {
-                            // update comparator for scroll direction
-                            lastScroll = currentScroll;
-                            // enable passthrough
-                            targetScroll = -1;
-                            // ignore this scroll event
-                            return;
-                        }
-
-                        // get scroll direction
-                        var dirUp = currentScroll > lastScroll ? false : true;
-
-                        // update index
-                        currentIndex += (dirUp ? -1 : 1);
-
-                        // reached before start, jump to end
-                        if (currentIndex < 0) {
-                            currentIndex = $pages.length - 1;
-                        }
-                        // reached after end, jump to start
-                        else if (currentIndex >= $pages.length) {
-                            currentIndex = 0;
-                        }
-
-                        // get scroll position of target
-                        targetScroll = $pages.eq(currentIndex).offset().top;
-
-                        // scroll to target
-                        doScroll(targetScroll);
-                    });
-
-                    // scroll to first element
-                    $(window).scrollTop(1)
                 },
                 error: function (response) {
                     console.log("FAILED");
                     console.log(response);
+                    d3.select("#noUserError").style("display", "block");
                     $("#spinnerCont").css({ display: "none" });
+                    $("#MainContent_ctl00").addClass("shake");
                 }
             });
 
@@ -530,6 +505,58 @@
             $("#humanSentimentChart").addClass("active");
         }
 
+        $('#heatmapnav').click(function () {
+
+            $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 1000);
+            closePopup();
+        });
+
+        $('#piechartnav').click(function () {
+
+            $('html,body').stop().animate({ scrollTop: $(".pieChart").offset().top }, 1000);
+            closePopup();
+        });
+        $('#barchartnav').click(function () {
+
+            $('html,body').stop().animate({ scrollTop: $(".barChart").offset().top }, 1000);
+            closePopup();
+        });
+        $('#sentimentnav').click(function () {
+
+            $('html,body').stop().animate({ scrollTop: $(".sentimentChart").offset().top }, 1000);
+            closePopup();
+        });
+
+        $('#popupButton').click(function () {
+            openPopup();
+           
+        });
+
+        function openPopup() {
+            if ($('#popup-contents').hasClass('hidden')) {
+
+                $('#popup-contents').removeClass('hidden');
+                setTimeout(function () {
+                    $('#popup-contents').removeClass('visuallyhidden');
+                }, 20);
+
+                $('#popupButton').css("display", "none");
+
+            }
+        }
+
+        $('#popupButtonOpen').click(function () {
+
+            closePopup();
+
+        });
+        function closePopup() {
+            $('#popup-contents').addClass('visuallyhidden');
+            $('#popup-contents').addClass('hidden');
+            $('#popupButton').css("display", "block");
+        }
+
     </script>
 
 </asp:Content>
+
