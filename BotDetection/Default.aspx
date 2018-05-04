@@ -36,11 +36,10 @@
                         <p id="created"></p>
                     </div>
                 </div>
-                <h3>Sections</h3>
-                <p><a id="searchNav" href="#submission">Search</a></p>
+ <h3>Sections</h3>
                 <div class="tooltip">
                     <p><a id="heatmapnav" href="#">Heat Map</a></p>
-                    <span class="tooltiptext">The heatmap shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
+                    <span class="tooltiptext">The heatmap of tweet times can show the trend than an account follows with posting.  Humans are very synchronous - they tend to have periods of high and low activity.  Bots on the other hand can follow a very consistent pattern such as tweeting every hour or at certain intervals.</span>
                 </div>
                 <div class="tooltip">
                     <p><a id="piechartnav" href="#">Pie Chart</a></p>
@@ -48,11 +47,11 @@
                 </div>
                 <div class="tooltip">
                     <p><a id="barchartnav" href="#">Bar Chart</a></p>
-                    <span class="tooltiptext">The bar chart shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
+                    <span class="tooltiptext">The bar chart shows the frequency at which an account posts tweets. If an account has low frequency with a sudden increase during a social campaign it may indicate that the account is posting to sway opinions during it.</span>
                 </div>
                 <div class="tooltip">
-                    <p><a id="sentimentnav" href="#">Sentiment Chart</a></p>
-                    <span class="tooltiptext">The sentiment chart shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
+                    <p><a id="sentimentnav" href="#">Mood Chart</a></p>
+                    <span class="tooltiptext">The mood chart shows a positive or negative lean for an account.  Human controlled accounts tend to have a variation of positive, negative and neutral sentiment for each tweet whereas a bot may heavily lean to one side.</span>
                 </div>
                 <button class="btn btn-info" id="popupButtonOpen" onclick="return false;">Hide Info</button>
             </div>
@@ -309,7 +308,6 @@
 
 
             $.ajax({
-                // url: "/GetTweets.asmx/GetTwitterDataJSON",
                 url: "https://botdetectionmanual.azurewebsites.net/GetTweets.asmx/GetTwitterDataJSON",
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
