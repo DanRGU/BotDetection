@@ -37,6 +37,7 @@
                     </div>
                 </div>
                 <h3>Sections</h3>
+                <p><a id="searchNav" href="#submission">Search</a></p>
                 <div class="tooltip">
                     <p><a id="heatmapnav" href="#">Heat Map</a></p>
                     <span class="tooltiptext">The heatmap shows how long it has taken the user to retweet since the tweet was originally posted.  This can indicate if an account is constantly searching through Tweets for keywords and retweeting them to spread certain messages.</span>
@@ -62,6 +63,7 @@
 
         <p id="noNameError" class="error">Please enter a username.</p>
         <p id="noUserError" class="error">Sorry!  That user doesn't exist.</p>
+        <p id="noTweetsError" class="error">Sorry!  That user doesn't have any tweets.</p>
         <div id="spinnerCont" class="col-md-12">
             <div class="lds-ring">
                 <div></div>
@@ -156,7 +158,7 @@
     <!--/Sentiment Chart Stuff-->
 
     <script type="text/javascript">      
-        
+
 
         //Global vars for switching between views (and on size change)
         var heatMapDataReload = botHeatData;
@@ -304,9 +306,7 @@
             var dataParam = $("#userInput").val();
             console.log(dataParam);
 
-            //if (dataParam == "") {
-            //    dataParam
-            // }
+
 
             $.ajax({
                 // url: "/GetTweets.asmx/GetTwitterDataJSON",
@@ -317,101 +317,105 @@
                 data: "{ 'userID': '" + dataParam + "' }",
                 success:
 
-                function (response) {
-                    console.log(response.Message);
-                    //Setting tweets to the JSON objects under d
-                    var tweets = response.d.tweets;
+                    function (response) {
+                        console.log(response.Message);
+                        //Setting tweets to the JSON objects under d
+                        var tweets = response.d.tweets;
+                        if (response.d["userName"] != "" && response.d["followers"] != "" && response.d["numTweets"] >0) {
 
 
-                    //Looping for each tweet and adding the variables to the arrays
-                    for (var i in tweets) {
-                        var tweet = tweets[i];
-
-                        if (i < 1) {
                             userName = response.d["userName"];
                             followers = response.d["followers"];
                             numTweets = response.d["numTweets"];
                             createdAt = new Date(parseFloat(response.d["created"].substr(6)));
-
-                        }
-
-                        //Tweet stuff
-                        id.push(tweet["tweetID"]);
-                        content.push(tweet["Content"]);
-                        dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
-                        originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
-                        retweeted.push(tweet["Retweeted"]);
-                        retweets.push(tweet["retweets"]);
-                        likes.push(tweet["likes"]);
-                        sentimentScore.push(tweet["sentiment"]);
-
-
-                        if (name == "") {
-                            name = response.d["screenName"];
-                        }
-
-                        if (i < 200) {
-                            sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
-                            tweetLengths.push(content[i].length);
-                        }
-                    }
-
-                    for (var i = 0; i < tweets.length; i++) {
-                        if (i < tweets.length - 1) {
-                            timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
                         }
                         else {
-                            timeSince.push(0);
+                            $("#MainContent_ctl00").addClass("shake");
+                            d3.select("#noTweetsError").style("display", "block");
+                            $("#spinnerCont").css({ display: "none" });
+                            return;
+                        }
+                        //Looping for each tweet and adding the variables to the arrays
+                        for (var i in tweets) {
+                            var tweet = tweets[i];
+
+                            //Tweet stuff
+                            id.push(tweet["tweetID"]);
+                            content.push(tweet["Content"]);
+                            dates.push(new Date(parseFloat(tweet["PostTime"].substr(6))));
+                            originalTimes.push(new Date(parseFloat(tweet["RetweetTime"].substr(6))));
+                            retweeted.push(tweet["Retweeted"]);
+                            retweets.push(tweet["retweets"]);
+                            likes.push(tweet["likes"]);
+                            sentimentScore.push(tweet["sentiment"]);
+
+
+                            if (name == "") {
+                                name = response.d["screenName"];
+                            }
+
+                            if (i < 200) {
+                                sentimentData.push({ name: tweet["tweetID"], value: tweet["sentiment"] }, );
+                                tweetLengths.push(content[i].length);
+                            }
                         }
 
-                        var time = convertMS(dates[i] - originalTimes[i]);
+                        for (var i = 0; i < tweets.length; i++) {
+                            if (i < tweets.length - 1) {
+                                timeSince.push(new Date(dates[i].getTime() - dates[i + 1].getTime()));
+                            }
+                            else {
+                                timeSince.push(0);
+                            }
 
-                        retweetTimes.push({ id: id[i], rtTime: time });
+                            var time = convertMS(dates[i] - originalTimes[i]);
 
-                    }
-                    //Setting Data for charts
-                    heatData = getHeatData(dates);
-                    pieChartData = getPieData(retweetTimes);
-                    barChartData = getBarData(dates);
+                            retweetTimes.push({ id: id[i], rtTime: time });
 
-
-                    if (document.readyState === "complete") {
-
-                        //Drawing the charts
-                        drawHeatmapChart(heatData, ".innerHeatMap");
-                        drawHeatmapChart(botHeatData, ".innerHeatMap2");
-
-                        drawPieChart(pieChartData, ".innerPieChart");
-                        drawPieChart(botPieData, ".innerPieChart2");
-
-                        drawBarChart(barChartData, ".innerBarChart");
-                        drawBarChart(botBarData, ".innerBarChart2");
-
-                        drawSentimentChart(sentimentData, ".innerSentimentChart");
-                        drawSentimentChart(botSentimentData, ".innerSentimentChart2");
-                    }
-
-                    $("#heatTitle").html("Heatmap of " + name + "'s Tweets");
-                    $("#pieTitle").html("Time taken to Retweet by " + name);
-                    $("#barTitle").html("Frequency of " + name + "'s Tweets");
-                    $("#sentimentTitle").html("Sentiment of " + name + "'s Tweets");
-
-                    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"
-                    ];
+                        }
+                        //Setting Data for charts
+                        heatData = getHeatData(dates);
+                        pieChartData = getPieData(retweetTimes);
+                        barChartData = getBarData(dates);
 
 
-                    $("#name").html(name);
-                    $("#screenName").html("@" + userName);
-                    $("#followers").html(followers);
-                    $("#tweets").html(numTweets);
-                    $("#created").html(monthNames[createdAt.getMonth()] + ", " + createdAt.getFullYear());
+                        if (document.readyState === "complete") {
 
-                    $("#spinnerCont").css({ display: "none" });
-                    $(".popup").css({ display: "flex" });
-                    $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
+                            //Drawing the charts
+                            drawHeatmapChart(heatData, ".innerHeatMap");
+                            drawHeatmapChart(botHeatData, ".innerHeatMap2");
+                            console.log(pieChartData);
+                            drawPieChart(pieChartData, ".innerPieChart");
+                            drawPieChart(botPieData, ".innerPieChart2");
 
-                },
+                            drawBarChart(barChartData, ".innerBarChart");
+                            drawBarChart(botBarData, ".innerBarChart2");
+
+                            drawSentimentChart(sentimentData, ".innerSentimentChart");
+                            drawSentimentChart(botSentimentData, ".innerSentimentChart2");
+                        }
+
+                        $("#heatTitle").html("Heatmap of " + name + "'s Tweets");
+                        $("#pieTitle").html("Time taken to Retweet by " + name);
+                        $("#barTitle").html("Frequency of " + name + "'s Tweets");
+                        $("#sentimentTitle").html("Sentiment of " + name + "'s Tweets");
+
+                        const monthNames = ["January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                        ];
+
+
+                        $("#name").html(name);
+                        $("#screenName").html("@" + userName);
+                        $("#followers").html(followers);
+                        $("#tweets").html(numTweets);
+                        $("#created").html(monthNames[createdAt.getMonth()] + ", " + createdAt.getFullYear());
+
+                        $("#spinnerCont").css({ display: "none" });
+                        $(".popup").css({ display: "flex" });
+                        $('html,body').stop().animate({ scrollTop: $(".heatMap").offset().top }, 'slow');
+
+                    },
                 error: function (response) {
                     console.log("FAILED");
                     console.log(response);
@@ -529,7 +533,7 @@
 
         $('#popupButton').click(function () {
             openPopup();
-           
+
         });
 
         function openPopup() {

@@ -255,6 +255,8 @@ function drawPieChart(dataset, className) {
     var legendRectSize = donutWidth;
     var legendSpacing = 4;
 
+   
+
     var svg = d3.select(className)
         .insert('svg', ":nth-child(2)")
         .attr('width', width)
@@ -262,6 +264,13 @@ function drawPieChart(dataset, className) {
         .append('g')
         .attr('transform', 'translate(' + (width / 2) +
         ',' + (height / 2) + ')');
+
+    if (dataset["0"].count == 0) {
+        console.log("pie");
+        svg.append('text')
+            .text("Sorry, this user hasn't retweeted.");
+        return;
+    }
 
     var arc = d3.svg.arc()
         .innerRadius(radius - donutWidth)
