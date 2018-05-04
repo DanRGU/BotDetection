@@ -22,10 +22,11 @@ namespace BotDetection
     {
 
         //Keys for Twitter API
-        string oAuthConsumerKey = "yCCy7XFwIGDxOppd7JsDMkmjt";
-        string oAuthConsumerSecret = "I8tLmmWblYLzRuHUSTtxaXmfHVLiKm0wGA0G8elR0SK34qor3D";
-        string oAuthAccessToken = "469737894-eMYLQcqUEyglEaURFMGgfW2IKYEVVSXZxcAwGZEh";
-        string oAuthAccessSecret = "C51EiVsmfGT08Auxl5wwYUkByDTsdy9sQxvXj2Mw5VJ1p";
+        //Keys have been removed for security purpose - the application will not work without them
+        string oAuthConsumerKey = "*";
+        string oAuthConsumerSecret = "*";
+        string oAuthAccessToken = "*";
+        string oAuthAccessSecret = "*";
 
 
         [WebMethod]
