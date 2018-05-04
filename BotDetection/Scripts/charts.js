@@ -73,9 +73,6 @@
 }
 
 function drawHeatmapChart(data, className) {
-
-    //using http://bl.ocks.org/tjdecke/5558084
-
     d3.select(className).selectAll("svg")
         .each(function (d, i) {
             this.remove();
